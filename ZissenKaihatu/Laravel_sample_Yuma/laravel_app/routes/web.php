@@ -20,4 +20,4 @@ Route::get('/', function () {
 Route::get('/hello', 'App\Http\Controllers\HelloController@index')->name('hello');
 Route::get('/hello/other', 'App\Http\Controllers\HelloController@other');
 
-Route::get('/hello/{id}','HelloController@index')->where('id', '[0-9]+');
+Route::get('/hello/{id}','App\Http\Controllers\HelloController@index')->where('id', '[0-9]+');
