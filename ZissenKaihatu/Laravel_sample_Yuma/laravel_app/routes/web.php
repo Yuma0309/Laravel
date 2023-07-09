@@ -27,7 +27,10 @@ Route::middleware([HelloMiddleware::class])->group(function () {
     Route::get('/hello/other', 'App\Http\Controllers\HelloController@other');
 });
 
-Route::namespace('App\Http\Controllers\Sample')->group(function() {
-    Route::get('/sample', 'SampleController@index');
-    Route::get('/sample/other', 'SampleController@other');
-});
+// Route::namespace('App\Http\Controllers\Sample')->group(function() {
+//     Route::get('/sample', 'SampleController@index');
+//     Route::get('/sample/other', 'SampleController@other');
+// });
+
+Route::get('/sample', 'App\Http\Controllers\Sample\SampleController@index');
+Route::get('/sample/other', 'App\Http\Controllers\Sample\SampleController@other');
