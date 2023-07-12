@@ -7,10 +7,8 @@ use App\Models\Person;
 
 class HelloController extends Controller
 {
-    public function index($id)
+    public function index(Person $person)
     {
-        $person = Person::find($id);
-        
         $data = [
             'msg'=>$person,
         ];

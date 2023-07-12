@@ -36,4 +36,4 @@ Route::middleware([HelloMiddleware::class])->group(function () {
 Route::get('/sample', 'App\Http\Controllers\Sample\SampleController@index');
 Route::get('/sample/other', 'App\Http\Controllers\Sample\SampleController@other');
 
-Route::get('/hello/{id}', 'App\Http\Controllers\HelloController@index');
+Route::get('/hello/{person}', 'App\Http\Controllers\HelloController@index');
