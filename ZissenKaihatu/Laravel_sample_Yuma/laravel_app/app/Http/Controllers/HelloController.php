@@ -30,7 +30,7 @@ class HelloController extends Controller
             $sample_meta) . '</td></tr></table>';
         
         $sample_data = Storage::disk('public')->get($this->fname);
-        
+
         $data = [
             'msg'=> $result,
             'data'=> explode(PHP_EOL, $sample_data)
@@ -38,9 +38,15 @@ class HelloController extends Controller
         return view('hello.index', $data);
     }
 
-    public function other($msg)
+    public function other()
     {
-        Storage::disk('public')->prepend($this->fname, $msg);
+        Storage::disk('public')->delete('bk_' . $this->fname);
+        Storage::disk('public')->copy($this->fname, 
+            'bk_' . $this->fname);
+        Storage::disk('local')->delete('bk_' . $this->fname);
+        Storage::disk('local')->move('public/bk_' . $this->fname, 
+            'bk_' . $this->fname);
+        
         return redirect()->route('hello');
     }
 }
