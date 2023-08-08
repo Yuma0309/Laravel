@@ -60,7 +60,12 @@ return [
             'driver' => 'local',
             'root' => storage_path('logs'),
             'url' => env('APP_URL') . '/storage/logs',
-        ]
+        ],
+
+        'win' => [
+            'driver' => 'local',
+            'root' => 'C:\\Windows\\',
+        ],
 
     ],
 
