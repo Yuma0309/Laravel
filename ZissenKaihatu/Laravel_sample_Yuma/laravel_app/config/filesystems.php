@@ -69,12 +69,12 @@ return [
 
         // League\Flysystemを使用してFTP接続してみる
         // https://qiita.com/sola-msr/items/576dade13f450861da97
-        'ftp' => [
-            'driver'   => 'ftp',
-            'host'     => 'ホスト名',
-            'username' => 利用者名,
-            'password' => パスワード,
-        ],
+        // 'ftp' => [
+        //     'driver'   => 'ftp',
+        //     'host'     => 'ホスト名',
+        //     'username' => 利用者名,
+        //     'password' => パスワード,
+        // ],
 
     ],
 
