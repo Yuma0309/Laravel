@@ -18,8 +18,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/hello', 'App\Http\Controllers\HelloController@index')->name('hello');
-// Route::get('/hello/other', 'App\Http\Controllers\HelloController@other');
+Route::get('/hello', 'App\Http\Controllers\HelloController@index')->name('hello');
+Route::get('/hello/other', 'App\Http\Controllers\HelloController@other');
 
 // Route::get('/hello/{id}','App\Http\Controllers\HelloController@index')->where('id', '[0-9]+');
 
@@ -38,11 +38,10 @@ Route::get('/sample/other', 'App\Http\Controllers\Sample\SampleController@other'
 
 // Route::get('/hello/{person}', 'App\Http\Controllers\HelloController@index');
 
-// Route::get('/hello', 'App\Http\Controllers\HelloController@index');
-Route::get('/hello/other', 'App\Http\Controllers\HelloController@other');
+Route::get('/hello', 'App\Http\Controllers\HelloController@index');
+Route::post('/hello', 'App\Http\Controllers\HelloController@index');
 Route::post('/hello/other', 'App\Http\Controllers\HelloController@other');
 
 Route::get('/sample', 'App\Http\Controllers\Sample\SampleController@index')->name('sample');
 
-Route::get('/hello', 'App\Http\Controllers\HelloController@index')->name('hello');
 Route::get('/hello/{msg}', 'App\Http\Controllers\HelloController@other');
