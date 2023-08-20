@@ -38,7 +38,7 @@ Route::get('/sample/other', 'App\Http\Controllers\Sample\SampleController@other'
 
 // Route::get('/hello/{person}', 'App\Http\Controllers\HelloController@index');
 
-Route::get('/hello', 'App\Http\Controllers\HelloController@index');
+// Route::get('/hello', 'App\Http\Controllers\HelloController@index');
 Route::post('/hello', 'App\Http\Controllers\HelloController@index');
 Route::post('/hello/other', 'App\Http\Controllers\HelloController@other');
 
