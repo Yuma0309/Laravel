@@ -44,4 +44,6 @@ Route::post('/hello/other', 'App\Http\Controllers\HelloController@other');
 
 Route::get('/sample', 'App\Http\Controllers\Sample\SampleController@index')->name('sample');
 
-Route::get('/hello/{msg}', 'App\Http\Controllers\HelloController@other');
+// Route::get('/hello/{msg}', 'App\Http\Controllers\HelloController@other');
+
+Route::get('/hello/{id}', 'App\Http\Controllers\HelloController@index');
