@@ -3,25 +3,19 @@ namespace App\MyClasses;
 
 
 class MyService
-{
-    private $id = -1;
-    private $msg = 'no id...';
-    private $data = ['Hello', 'Welcome', 'Bye'];
+{  
+    private $myservice;
 
 
-    public function __construct()
+    private function __construct()
     {
     }
 
 
-    public function setId($id)
+    public static function getInstance()
     {
-        $this->id = $id;
-        if ($id >= 0 && $id < count($this->data))
-        {
-            $this->msg = "select  id:" . $id
-                . ', data:"' . $this->data[$id] . '"';
-        }
+        $instance = self::$myservice;
+        return self::$myservice ?? self::$myservice = new MyService();
     }
 
 
