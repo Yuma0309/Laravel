@@ -24,7 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        app()->bind('App\MyClasses\MyServiceInterface',
-            'App\MyClasses\MyService');
+        app()->bind('App\MyClasses\MyServiceInterface', function ($app) {
+            return new MyService(-1);
+        });
     }
 }
