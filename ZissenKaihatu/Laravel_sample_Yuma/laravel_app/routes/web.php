@@ -48,8 +48,11 @@ Route::get('/sample', 'App\Http\Controllers\Sample\SampleController@index')->nam
 
 // Route::get('/hello/{id}', 'App\Http\Controllers\HelloController@index');
 
-Route::get('/hello', 'App\Http\Controllers\HelloController@index')
-    ->middleware(App\Http\Middleware\MyMiddleware::class);
+// Route::get('/hello', 'App\Http\Controllers\HelloController@index')
+//     ->middleware(App\Http\Middleware\MyMiddleware::class);
 
 Route::get('/hello/{id}', 'App\Http\Controllers\HelloController@index')
     ->middleware(App\Http\Middleware\MyMiddleware::class);
+
+Route::get('/hello', 'App\Http\Controllers\HelloController@index')
+    ->middleware('MyMW');
