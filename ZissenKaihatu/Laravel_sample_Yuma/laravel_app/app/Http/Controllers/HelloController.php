@@ -11,7 +11,7 @@ class HelloController extends Controller
         {
             $msg = 'get ID <= ' . $id;
             $result = DB::table('people')
-                ->where('id','<=', $id)->get();
+                ->where('id', '<=', $id)->get();
         }
         else
         {
