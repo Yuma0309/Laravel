@@ -9,9 +9,9 @@ class HelloController extends Controller
     {
         if ($id >= 0)
         {
-            $msg = 'get ID <= ' . $id;
+            $msg = 'get name like "' . $id . '".';
             $result = DB::table('people')
-                ->where('id', '<=', $id)->get();
+                ->where('name','like', '%' . $id . '%')->get();
         }
         else
         {
