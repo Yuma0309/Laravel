@@ -10,7 +10,7 @@ class HelloController extends Controller
         $ids = explode(',', $id);
         $msg = 'get people.';
         $result = DB::table('people')
-            ->whereBetween('id', $ids)
+            ->whereIn('id' ,$ids)
             ->get();
 
 
