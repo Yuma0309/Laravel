@@ -6,6 +6,7 @@
         th { background-color:red; padding:10px; }
         td { background-color:#eee; padding:10px; }
     </style>
+    <link href="/css/app.css"  rel="stylesheet">
 </head>
 <body>
     <h1>Hello/Index</h1>
