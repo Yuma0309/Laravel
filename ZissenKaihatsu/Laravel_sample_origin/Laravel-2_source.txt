@@ -1,0 +1,5141 @@
+﻿単行本「PHPフレームワーク Laravel実践開発」
+
+
+掲載リスト
+
+
+
+
+リスト1-1
+<?php
+namespace App\Http\Controllers;
+
+
+use Illuminate\Http\Request;
+
+
+class HelloController extends Controller
+{
+    public function index()
+    {
+        $data = [
+            'msg'=>'this is sample message.',
+        ];
+        return view('hello.index', $data);
+    }
+}
+
+
+
+
+リスト1-2
+<!doctype html>
+<html lang="ja">
+<head>
+    <title>Index</title>
+</head>
+<body>
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+</body>
+</html>
+
+
+
+
+リスト1-3
+Route::get('/hello', 'HelloController@index');
+
+
+
+
+リスト1-4
+Route::get('/hello', 'HelloController@index')->name('hello');
+Route::get('/hello/other', 'HelloController@other');
+
+
+
+
+リスト1-5
+public function other()
+{
+    return redirect()->route('hello');
+}
+
+
+
+
+リスト1-6
+Route::get('/hello/{id}','HelloController@index')->where('id', '[0-9]+');
+
+
+
+
+リスト1-7
+public function index($id)
+{
+    $data = [
+        'msg'=>'id = ' . $id,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-8
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>@yield('title')</title>
+
+
+        <!-- Fonts -->
+        <link rel="dns-prefetch" href="//fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css?family=Nunito" 
+                rel="stylesheet" type="text/css">
+
+
+        <!-- Styles -->
+        <style>
+            ……略……
+        </style>
+    </head>
+    <body>
+        <div class="flex-center position-ref full-height">
+            <div class="code">
+                @yield('code')
+            </div>
+
+
+            <div class="message" style="padding: 10px;">
+                @yield('message')
+            </div>
+        </div>
+    </body>
+</html>
+
+
+
+
+リスト1-9
+@extends('errors::minimal')
+
+
+@section('title', __('Not Found'))
+@section('code', '404')
+@section('message', __('Not Found'))
+
+
+
+
+リスト1-10
+<?php
+namespace App\Http\Middleware;
+
+
+use Closure;
+
+
+class HelloMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        $hello = 'Hello! This is Middleware!!';
+        $bye = 'Good-bye, Middleware...';
+        $data = [
+            'hello'=>$hello,
+            'bye'=>$bye
+        ];
+        $request->merge($data);
+        return $next($request);
+    }
+}
+
+
+
+
+リスト1-11
+<?php
+namespace App\Http\Controllers;
+
+
+use Illuminate\Http\Request;
+
+
+class HelloController extends Controller
+{
+    public function index(Request $request)
+    {
+        $data = [
+            'msg'=>$request->hello,
+        ];
+        return view('hello.index', $data);
+    }
+
+
+    public function other(Request $request)
+    {
+        $data = [
+            'msg'=>$request->bye,
+        ];
+        return view('hello.index', $data);
+    }
+}
+
+
+
+
+リスト1-12
+Route::middleware([HelloMiddleware::class])->group(function () {
+    Route::get('/hello', 'HelloController@index');
+    Route::get('/hello/other', 'HelloController@other');
+});
+
+
+
+
+リスト1-13
+<?php
+namespace App\Http\Controllers\Sample;
+
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+
+class SampleController extends Controller
+{
+    public function index(Request $request)
+    {
+        $data = [
+            'msg'=>'SAMPLE-CONTROLLER-INDEX!',
+        ];
+        return view('hello.index', $data);
+    }
+
+
+    public function other(Request $request)
+    {
+        $data = [
+            'msg'=>'SAMPLE-CONTROLLER-OTHER!!',
+        ];
+        return view('hello.index', $data);
+    }
+
+
+}
+
+
+
+
+リスト1-14
+Route::namespace('Sample')->group(function() {
+    Route::get('/sample', 'SampleController@index');
+    Route::get('/sample/other', 'SampleController@other');
+})
+
+
+
+
+リスト1-15
+Route::get('/sample', 'Sample\SampleController@index');
+Route::get('/sample/other', 'Sample\SampleController@other');
+
+
+
+
+リスト1-16――用意するテーブル
+CREATE TABLE `people` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `name` TEXT NOT NULL,
+    `mail` TEXT, `age` INTEGER
+)
+
+
+
+
+リスト1-17――/app/Person.php
+<?php
+namespace App;
+
+
+use Illuminate\Database\Eloquent\Model;
+
+
+class Person extends Model
+{
+}
+
+
+
+
+Route::get('/hello/{person}', 'HelloController@index');
+
+
+
+
+リスト1-19
+public function index(Person $person)
+{
+    $data = [
+        'msg'=>$person,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-20
+public function boot()
+{
+    parent::boot();
+    Route::model('person',Person::class);
+}
+
+
+
+
+リスト1-21
+<?php
+
+
+return [
+    'name' => env('APP_NAME', 'Laravel'),
+    'env' => env('APP_ENV', 'production'),
+    'debug' => env('APP_DEBUG', false),
+    'url' => env('APP_URL', 'http://localhost'),
+    'asset_url' => env('ASSET_URL', null),
+
+
+    ……以下略……
+];
+
+
+
+
+リスト1-22
+<?php
+return [
+    'message' => 'This is sample config-data!',
+    'data' => ['one', 'two', 'three'],
+];
+
+
+
+
+リスト1-23
+<?php
+namespace App\Http\Controllers;
+
+
+class HelloController extends Controller
+{
+    public function index()
+    {
+        $sample_msg = config('sample.message');
+        $sample_data = config('sample.data');
+        $data = [
+            'msg'=> $sample_msg,
+            'data'=> $sample_data
+        ];
+        return view('hello.index', $data);
+    }
+
+
+}
+
+
+
+
+リスト1-24
+<body>
+    <h1>Hello/Index</h1>
+    <p>{!!$msg!!}</p>
+    <ul>
+    @foreach($data as $item)
+    <li>{!!$item!!}</li>
+    @endforeach
+    </ul>
+</body>
+
+
+
+
+リスト1-25
+Route::get('/hello', 'HelloController@index');
+
+
+
+
+リスト1-26
+function __construct()
+{
+    config(['sample.message'=>'新しいメッセージ！']);
+}
+
+
+
+
+リスト1-27
+class HelloController extends Controller
+{
+    function __construct()
+    {
+        config(['sample.message'=>'新しいメッセージ！']);
+    }
+
+
+    public function index()
+    {
+        $sample_msg = config('sample.message');
+        $sample_data = config('sample.data');
+        $data = [
+            'msg'=> $sample_msg,
+            'data'=> $sample_data
+        ];
+        return view('hello.index', $data);
+    }
+
+
+    public function other(Request $request)
+    {
+        return redirect()->route('sample');
+    }
+}
+
+
+
+
+リスト1-28
+public function index()
+{
+    $sample_msg = config('sample.message');
+    $sample_data = config('sample.data');
+    $data = [
+        'msg'=> $sample_msg,
+        'data'=> $sample_data
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-29
+Route::get('/hello', 'HelloController@index');
+Route::get('/hello/other', 'HelloController@other');
+
+
+Route::get('/sample', 'Sample\SampleController@index')->name('sample');
+
+
+
+
+リスト1-30
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        ……略……
+    }
+
+
+    public function boot()
+    {
+        config([
+            'sample.data'=>['こんにちは', 'どうも', 'さようなら']
+        ]);
+    }
+}
+
+
+
+
+リスト1-31
+SAMPLE_MESSAGE="This is Environment message!"
+SAMPLE_DATA=AAA,BBB,CCC
+
+
+
+
+リスト1-32
+public function index()
+{
+    $sample_msg = env('SAMPLE_MESSAGE');
+    $sample_data = config('sample.data');
+    $data = [
+        'msg'=> $sample_msg,
+        'data'=> explode(',', $sample_data)
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-33
+// use Illuminate\Support\Facades\Storage;        // 追加
+
+
+class HelloController extends Controller
+{
+    private $fname;
+
+
+    public function __construct()
+    {
+        $this->fname = 'sample.txt';
+    }
+
+
+    public function index()
+    {
+        $sample_msg = $this->fname;
+        $sample_data = Storage::get($this->fname);
+        $data = [
+            'msg'=> $sample_msg,
+            'data'=> explode(PHP_EOL, $sample_data)
+        ];
+        return view('hello.index', $data);
+    }
+
+
+    public function other($msg)
+    {
+        $data = Storage::get($this->fname) . PHP_EOL . $msg;
+        Storage::put($this->fname, $data);
+        return redirect()->route('hello');
+    }
+}
+
+
+
+
+リスト1-34
+Route::get('/hello', 'HelloController@index')->name('hello');
+Route::get('/hello/{msg}', 'HelloController@other');
+
+
+
+
+リスト1-35
+public function other($msg)
+{
+    Storage::append($this->fname, $msg);
+    return redirect()->route('hello');
+}
+
+
+
+
+リスト1-36
+class HelloController extends Controller
+{
+    private $fname;
+
+
+    public function __construct()
+    {
+        $this->fname = 'hello.txt';
+    }
+
+
+    public function index()
+    {
+        $sample_msg = Storage::disk('public')->url($this->fname);
+        $sample_data = Storage::disk('public')->get($this->fname);
+        $data = [
+            'msg'=> $sample_msg,
+            'data'=> explode(PHP_EOL, $sample_data)
+        ];
+        return view('hello.index', $data);
+    }
+    
+    public function other($msg)
+    {
+        Storage::disk('public')->prepend($this->fname, $msg);
+        return redirect()->route('hello');
+    }    
+    
+}
+
+
+
+
+リスト1-37
+public function index()
+{
+    $url = Storage::disk('public')->url($this->fname);
+    $size = Storage::disk('public')->size($this->fname);
+    $modified = Storage::disk('public')
+        ->lastModified($this->fname);
+    $modified_time = date('y-m-d H:i:s', $modified);
+    $sample_keys = ['url', 'size', 'modified'];
+    $sample_meta = [$url, $size, $modified_time];
+    $result = '<table><tr><th>' . implode('</th><th>',
+        $sample_keys) . '</th></tr>';
+    $result .= '<tr><td>' . implode('</td><td>',
+        $sample_meta) . '</td></tr></table>';
+    
+    $sample_data = Storage::disk('public')->get($this->fname);
+
+
+    $data = [
+        'msg'=> $result,
+        'data'=> explode(PHP_EOL, $sample_data)
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-38
+<style>
+th { background-color:red; padding:10px; }
+td { background-color:#eee; padding:10px; }
+</style>
+
+
+
+
+リスト1-39
+public function other($msg)
+{
+    Storage::disk('public')->delete('bk_' . $this->fname);
+    Storage::disk('public')->copy($this->fname, 
+        'bk_' . $this->fname);
+    Storage::disk('local')->delete('bk_' . $this->fname);
+    Storage::disk('local')->move('public/bk_' . $this->fname, 
+        'bk_' . $this->fname);
+    
+    return redirect()->route('hello');
+}  
+
+
+
+
+リスト1-40
+public function other($msg)
+{
+    if (Storage::disk('public')->exists('bk_' . $this->fname))
+    {
+        Storage::disk('public')->delete('bk_' . $this->fname);
+    }
+    Storage::disk('public')->copy($this->fname, 
+        'bk_' . $this->fname);
+    if (Storage::disk('local')->exists('bk_' . $this->fname))
+    {
+        Storage::disk('local')->delete('bk_' . $this->fname);
+    }
+    Storage::disk('local')->move('public/bk_' . $this->fname, 
+        'bk_' . $this->fname);
+    
+    return redirect()->route('hello');
+}   
+
+
+
+
+リスト1-41
+public function other($msg)
+{
+    return Storage::disk('public')->download($this->fname);
+}  
+
+
+
+
+リスト1-42
+<p><a href="/hello/other">download</a></p>
+
+
+
+
+リスト1-43
+<form action="/hello/other" method="post" 
+    enctype="multipart/form-data">
+    @csrf
+    <input type="file" name="file">
+    <input type="submit">
+</form>
+
+
+
+
+リスト1-44
+public function other(Request $request)
+{
+    Storage::disk('local')->
+        putFile('files', $request->file('file'));
+    return redirect()->route('hello');
+
+
+}
+
+
+
+
+リスト1-45
+Route::post('/hello/other', 'HelloController@other');
+
+
+
+
+リスト1-46
+public function index()
+{
+    $dir = '/';
+    $all = Storage::disk('local')->allfiles($dir);
+    
+    $data = [
+        'msg'=> 'DIR: ' . $dir,
+        'data'=> $all
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-47
+return [
+
+
+    'default' => env('FILESYSTEM_DRIVER', 'local'),
+
+
+    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
+
+
+    'disks' => [
+
+
+        'local' => [
+            'driver' => 'local',
+            'root' => storage_path('app'),
+        ],
+
+
+        'public' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+
+
+        's3' => [
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+        ],
+
+
+    ],
+
+
+];
+
+
+
+
+リスト1-48
+'logs' => [
+    'driver' => 'local',
+    'root' => storage_path('logs'),
+    'url' => env('APP_URL') . '/storage/logs',
+]
+
+
+
+
+リスト1-49
+'win' => [
+    'driver' => 'local',
+    'root' => 'C:\\Windows\\',
+],
+
+
+
+
+リスト1-50
+'ftp' => [
+    'driver'   => 'ftp',
+    'host'     => 'ホスト名',
+    'username' => 利用者名,
+    'password' => パスワード,
+],
+
+
+
+
+リスト1-51
+<body>
+    <h1>Hello/Index</h1>
+    <p>{!!$msg!!}</p>
+    <form action="/hello" method="post">
+        @csrf
+        <input type="text" name="msg">
+        <input type="submit">
+    </form>
+</body>
+
+
+
+
+リスト1-52
+// use Illuminate\Http\Request;
+// use Illuminate\Http\Response;
+
+
+public function index(Request $request)
+{
+    $msg = 'please input text:';
+    if ($request->isMethod('post'))
+    {
+        $msg = 'you typed: "' . $request->input('msg') . '"';
+    }
+    $data = [
+        'msg'=> $msg,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-53
+Route::get('/hello', 'HelloController@index');
+Route::post('/hello', 'HelloController@index');
+
+
+
+
+リスト1-54
+<body>
+    <h1>Hello/Index</h1>
+    <p>{!!$msg!!}</p>
+    <form action="/hello" method="post">
+        @csrf
+        <div>NAME:<input type="text" name="name"></div>
+        <div>MAIL:<input type="text" name="mail"></div>
+        <div>TEL: <input type="text" name="tel"></div>
+        <input type="submit">
+    </form>
+    <hr>
+    <ol>
+    @for($i = 0;$i < count($keys);$i++)
+        <li>{{$keys[$i]}}：{{$values[$i]}}</li>
+    @endfor
+    </ol>
+</body>
+
+
+
+
+リスト1-55
+public function index(Request $request)
+{
+    $msg = 'please input text:';
+    $keys = [];
+    $values = [];
+    if ($request->isMethod('post'))
+    {
+        $form = $request->all();
+        $keys = array_keys($form);
+        $values = array_values($form);
+    }
+    $data = [
+        'msg'=> $msg,
+        'keys' => $keys,
+        'values' => $values,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-56
+public function index(Request $request, Response $response)
+{
+    $msg = 'please input text:';
+    $keys = [];
+    $values = [];
+    if ($request->isMethod('post'))
+    {
+        $form = $request->all();
+        $result = '<html><body>';
+        foreach($form as $key => $value)
+        {
+            $result .= $key . ': ' . $value . "<br>";
+        }
+        $result .= '</body></html>';
+        $response->setContent($result);
+        return $response;
+    }
+    $data = [
+        'msg'=> $msg,
+        'keys' => $keys,
+        'values' => $values,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-57
+public function index(Request $request, Response $response)
+{
+    $msg = 'please input text:';
+    $keys = [];
+    $values = [];
+    if ($request->isMethod('post'))
+    {
+        $form = $request->only(['name', 'mail']);
+        $keys = array_keys($form);
+        $values = array_values($form);
+        $data = [
+            'msg'=>'you inputted.',
+            'keys'=>$keys,
+            'values'=>$values,
+        ];
+        return view('hello.index', $data);
+    }
+    $data = [
+        'msg'=> $msg,
+        'keys'=>$keys,
+        'values'=>$values,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-58
+public function index(Request $request, Response $response)
+{
+    $msg = 'please input text:';
+    $keys = [];
+    $values = [];
+    if ($request->isMethod('post'))
+    {
+        $form = $request->only(['name', 'mail', 'tel']);
+        $keys = array_keys($form);
+        $values = array_values($form);
+        $msg =  old('name') . ', ' . old('mail') 
+                . ', ' . old('tel');
+        $data = [
+            'msg' => $msg,
+            'keys' => $keys,
+            'values' => $values,
+        ];
+        $request->flash();
+        return view('hello.index', $data);
+    }
+    $data = [
+        'msg'=> $msg,
+        'keys'=>$keys,
+        'values'=>$values,
+    ];
+        
+    $request->flash();
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-59
+<form action="/hello" method="post">
+    @csrf
+    <div>NAME:<input type="text" name="name" value="{{old('name')}}"></div>
+    <div>MAIL:<input type="text" name="mail" value="{{old('mail')}}"></div>
+    <div>TEL: <input type="text" name="tel" value="{{old('tel')}}"></div>
+    <input type="submit">
+</form>
+
+
+
+
+リスト1-60
+public function index(Request $request, Response $response)
+{
+    $name = $request->query('name');
+    $mail = $request->query('mail');
+    $tel = $request->query('tel');
+    $msg = $name . ', ' . $mail . ', ' . $tel;
+    $keys = ['名前','メール','電話'];
+    $values = [$name, $mail, $tel];
+    $data = [
+        'msg'=> $msg,
+        'keys'=>$keys,
+        'values'=>$values,
+    ];
+    $request->flash();
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト1-61
+class HelloController extends Controller
+{
+
+
+    public function index(Request $request, Response $response)
+    {
+        $name = $request->query('name');
+        $mail = $request->query('mail');
+        $tel = $request->query('tel');
+        $msg = $request->query('msg');
+        $keys = ['名前','メール','電話'];
+        $values = [$name, $mail, $tel];
+        $data = [
+            'msg'=> $msg,
+            'keys'=>$keys,
+            'values'=>$values,
+        ];
+        $request->flash();
+
+
+        return view('hello.index', $data);
+    }
+
+
+    public function other()
+    {
+        $data = [
+            'name' => 'Taro',
+            'mail' => 'taro@yamada',
+            'tel' => '090-999-999',
+        ];
+        $query_str = http_build_query($data);
+        $data['msg'] = $query_str;
+        return redirect()->route('hello', $data);
+    }
+    
+}
+
+
+
+
+リスト1-62
+Route::get('/hello/other', 'HelloController@other');
+Route::get('/hello', 'HelloController@index')->name('hello');
+
+
+
+
+リスト2-1
+<?php
+namespace App\MyClasses;
+
+
+class MyService
+{
+    private $msg;
+    private $data;
+
+
+    public function __construct()
+    {
+        $this->msg = 'Hello! This is MyService!';
+        $this->data = ['Hello', 'Welcome', 'Bye'];
+    }
+
+
+    public function say()
+    {
+        return $this->msg;
+    }
+
+
+    public function data()
+    {
+        return $this->data;
+    }
+}
+
+
+
+
+リスト2-2
+<?php
+namespace App\Http\Controllers;
+
+
+use App\MyClasses\MyService;
+
+
+class HelloController extends Controller
+{
+
+
+    public function index(MyService $myservice)
+    {
+        $data = [
+            'msg'=> $myservice->say(),
+            'data'=> $myservice->data()
+        ];
+        return view('hello.index', $data);
+    }
+    
+}
+
+
+
+
+リスト2-3
+Route::get('/hello', 'HelloController@index')->name('hello');
+
+
+
+
+リスト2-4
+<body>
+    <h1>Hello/Index</h1>
+    <p>{!!$msg!!}</p>
+    <ul>
+    @foreach($data as $item)
+    <li>{!!$item!!}</li>
+    @endforeach
+    </ul>
+</body>
+
+
+
+
+リスト2-5
+public function index()
+{
+    $myservice = app('App\MyClasses\MyService'); // ☆
+    $data = [
+        'msg'=> $myservice->say(),
+        'data'=> $myservice->data()
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト2-6
+<?php
+namespace App\MyClasses;
+
+
+class MyService
+{
+    private $id = -1;
+    private $msg = 'no id...';
+    private $data = ['Hello', 'Welcome', 'Bye'];
+
+
+    public function __construct(int $id = -1)
+    {
+        if ($id >= 0)
+        {
+            $this->id = $id;
+            $this->msg = 'select: ' . $this->data[$id];
+        }
+    }
+
+
+    public function say()
+    {
+        return $this->msg;
+    }
+
+
+    public function data(int $id)
+    {
+        return $this->data[$id];
+    }
+
+
+    public function alldata()
+    {
+        return $this->data;
+    }
+}
+
+
+
+
+リスト2-7
+public function index(int $id = -1)
+{
+    $myservice = app()->makeWith('App\MyClasses\MyService', 
+            ['id' => $id]);
+    $data = [
+        'msg'=> $myservice->say($id),
+        'data'=> $myservice->alldata()
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト2-8
+Route::get('/hello/{id}', 'HelloController@index');
+
+
+
+
+リスト2-9
+class MyService
+{
+    
+    private $id = -1;
+    private $msg = 'no id...';
+    private $data = ['Hello', 'Welcome', 'Bye'];
+
+
+    public function __construct()
+    {
+    }
+
+
+    public function setId($id)
+    {
+        $this->id = $id;
+        if ($id >= 0 && $id < count($this->data))
+        {
+            $this->msg = "select  id:" . $id
+                . ', data:"' . $this->data[$id] . '"';
+        }
+    }
+
+
+    public function say()
+    {
+        return $this->msg;
+    }
+
+
+    public function data(int $id)
+    {
+        return $this->data[$id];
+    }
+
+
+    public function alldata()
+    {
+        return $this->data;
+    }
+}
+
+
+
+
+リスト2-10
+// use App\MyClasses\MyService;        // 追加
+
+
+public function boot()
+{
+    app()->bind('App\MyClasses\MyService', 
+            function ($app) {
+        $myservice = new MyService();
+        $myservice->setId(0);
+        return $myservice;
+    });
+}
+
+
+
+
+リスト2-11
+public function index(MyService $myservice, int $id = -1)
+{
+    $myservice->setId($id);
+    $data = [
+        'msg'=> $myservice->say($id),
+        'data'=> $myservice->alldata()
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト2-12
+class MyService
+{  
+    private $myservice;
+
+
+    private function __construct()
+    {
+    }
+
+
+    public static getInstance()
+    {
+        return self::$myservice ?? self::$myservice = new MyService();
+    }
+
+
+    ……他、プロパティ・メソッドは略……
+}
+
+
+
+
+リスト2-13
+class MyService
+{  
+    private $serial;
+    private $id = -1;
+    private $msg = 'no id...';
+    private $data = ['Hello', 'Welcome', 'Bye'];
+
+
+    function __construct()
+    {
+        $this->serial = rand();
+        echo "「" . $this->serial . "」";
+    }
+
+
+    public function setId($id)
+    {
+        $this->id = $id;
+        if ($id >= 0 && $id < count($this->data))
+        {
+            $this->msg = "select  id:" . $id
+                . ', data:"' . $this->data[$id] . '"';
+        }
+    }
+
+
+    public function say()
+    {
+        return $this->msg;
+    }
+
+
+    public function data(int $id)
+    {
+        return $this->data[$id];
+    }
+
+
+    public function alldata()
+    {
+        return $this->data;
+    }
+    
+}
+
+
+
+
+リスト2-14
+class HelloController extends Controller
+{
+    function __construct(MyService $myservice)
+    {
+        $myservice = app('App\MyClasses\MyService');
+    }
+
+
+    public function index(MyService $myservice, int $id = -1)
+    {
+        $myservice->setId($id);
+        $data = [
+            'msg'=> $myservice->say($id),
+            'data'=> $myservice->alldata()
+        ];
+        return view('hello.index', $data);
+    }
+    
+}
+
+
+
+
+リスト2-15
+public function boot()
+{
+    app()->bind('App\MyClasses\MyService', 
+            function ($app) {
+        $myservice = new MyService();
+        $myservice->setId(0);
+        return $myservice;
+    });
+}
+
+
+
+
+リスト2-16
+public function boot()
+{
+    app()->singleton('App\MyClasses\MyService', 
+            function ($app) {
+        $myservice = new MyService();
+        $myservice->setId(0);
+        return $myservice;
+    });
+}
+
+
+
+
+リスト2-17
+function __construct(int $id)
+{
+    $this->setId($id);
+    $this->serial = rand();
+    echo "「" . $this->serial . "」";
+}
+
+
+
+
+リスト2-18
+public function boot()
+{
+    app()->when('App\MyClasses\MyService')
+          ->needs('$id')
+          ->give(1);
+}
+
+
+
+
+リスト2-19
+<?php
+namespace App\MyClasses;
+
+
+interface MyServiceInterface
+{
+    public function setId(int $id);
+    public function say();
+    public function allData();
+    public function data(int $id);
+}
+
+
+
+
+リスト2-20
+public function boot()
+{
+    app()->bind('App\MyClasses\MyServiceInterface',
+        'App\MyClasses\MyService');
+}
+
+
+
+
+リスト2-21
+// use App\MyClasses\MyServiceInterface;        // 追加
+
+
+class HelloController extends Controller
+{
+    function __construct()
+    {
+    }
+
+
+    public function index(MyServiceInterface $myservice, int $id = -1)
+    {
+        $myservice->setId($id);
+        $data = [
+            'msg'=> $myservice->say(),
+            'data'=> $myservice->alldata()
+        ];
+        return view('hello.index', $data);
+    }
+    
+}
+
+
+
+
+リスト2-22
+<?php
+namespace App\MyClasses;
+
+
+class PowerMyService implements MyServiceInterface
+{  
+    private $id = -1;
+    private $msg = 'no id...';
+    private $data = ['いちご','リンゴ','バナナ','みかん','ぶどう'];
+
+
+    function __construct()
+    {
+        $this->setId(rand(0, count($this->data)));
+    }
+
+
+    public function setId($id)
+    {
+        if ($id >= 0 && $id < count($this->data))
+        {
+            $this->id = $id;
+            $this->msg = "あなたが好きなのは、" . $id
+                . '番の' . $this->data[$id] . 'ですね！';
+        }
+    }
+
+
+    public function say()
+    {
+        return $this->msg;
+    }
+
+
+    public function data(int $id)
+    {
+        return $this->data[$id];
+    }
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+
+    public function alldata()
+    {
+        return $this->data;
+    }
+    
+}
+
+
+
+
+リスト2-23
+public function boot()
+{
+    app()->bind('App\MyClasses\MyServiceInterface',
+        'App\MyClasses\PowerMyService');
+}
+
+
+
+
+リスト2-24
+public function boot()
+{
+    app()->resolving(function ($obj, $app) {
+        if (is_object($obj))
+        {
+            echo get_class($obj) . '<br>';
+        }
+        else
+        {
+            echo $obj . '<br>';
+        }
+        
+    });
+    
+    app()->resolving(PowerMyService::class, function ($obj, $app) {
+        $newdata = ['ハンバーグ','カレーライス','唐揚げ','餃子'];
+        $obj->setData($newdata);
+        $obj->setId(rand(0, count($newdata)));
+    });
+    
+    app()->singleton('App\MyClasses\MyServiceInterface',
+        'App\MyClasses\PowerMyService');
+
+
+}
+
+
+
+
+リスト2-25
+<?php
+namespace App\Providers;
+
+
+use Illuminate\Support\ServiceProvider;
+
+
+class MyServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        app()->singleton('App\MyClasses\MyServiceInterface',
+            'App\MyClasses\PowerMyService');
+        echo "<b>＜MyServiceProvider/register＞</b><br>";
+    }
+
+
+    public function boot()
+    {
+        echo "<b>＜MyServiceProvider/boot＞</b><br>";
+    }
+}
+
+
+
+
+リスト2-26
+App\Providers\MyServiceProvider::class,
+
+
+
+
+リスト2-27
+class HelloController extends Controller
+{
+
+
+    public function index(MyServiceInterface $myservice, int $id = -1)
+    {
+        $myservice->setId($id);
+        $data = [
+            'msg'=> $myservice->say(),
+            'data'=> $myservice->alldata()
+        ];
+        return view('hello.index', $data);
+    }
+    
+}
+
+
+
+
+リスト2-28
+<?php
+namespace App\Facades;
+
+
+use Illuminate\Support\Facades\Facade;
+
+
+class MyService extends Facade {
+
+
+    protected static function getFacadeAccessor() {
+        return 'myservice';
+    }
+    
+}
+
+
+
+
+リスト2-29
+'myservice' => App\Facades\MyService::class,
+
+
+
+
+リスト2-30
+public function register()
+{
+    app()->singleton('myservice',
+        'App\MyClasses\PowerMyService');
+    app()->singleton('App\MyClasses\MyServiceInterface',
+        'App\MyClasses\PowerMyService');
+    echo "<b>＜MyServiceProvider/register＞</b><br>";
+}
+
+
+
+
+リスト2-31
+// use App\Facades\MyService;        // 追加
+
+
+class HelloController extends Controller
+{
+
+
+    public function index(int $id = -1)
+    {
+        MyService::setId($id);
+        $data = [
+            'msg'=> MyService::say(),
+            'data'=> MyService::alldata()
+        ];
+        return view('hello.index', $data);
+    }
+    
+}
+
+
+
+
+リスト2-32
+<?php
+namespace App\Http\Middleware;
+
+
+use Closure;
+use App\Facades\MyService;
+
+
+class MyMiddleware
+{
+
+
+    public function handle($request, Closure $next)
+    {
+        $id = rand(0, count(MyService::alldata()));
+        MyService::setId($id);
+        $merge_data = [
+            'id'=>$id,
+            'msg'=>MyService::say(), 
+            'alldata'=>MyService::alldata()
+        ];
+        $request->merge($merge_data);
+
+
+        return $next($request);
+    }
+
+
+}
+
+
+
+
+リスト2-33
+Route::get('/hello', 'HelloController@index')
+    ->middleware(App\Http\Middleware\MyMiddleware::class);
+
+
+Route::get('/hello/{id}', 'HelloController@index')
+    ->middleware(App\Http\Middleware\MyMiddleware::class);
+
+
+
+
+リスト2-34
+public function index(Request $request)
+{
+    $data = [
+        'msg'=> $request->msg,
+        'data'=> $request->alldata,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト2-35
+public function handle($request, Closure $next)
+{
+    // ●before処理・開始
+    $id = rand(0, count(MyService::alldata()));
+    MyService::setId($id);
+    $merge_data = [
+        'id'=>$id,
+        'msg'=>MyService::say(), 
+        'alldata'=>MyService::alldata()
+    ];
+    $request->merge($merge_data);
+    // ●before処理・終了
+
+
+    $response = $next($request);
+
+
+    // ●after処理・開始
+    $content = $response->content();
+    $content .= '<style>
+        body {background-color:#eef; }
+        p { font-size:18pt; }
+        li { color: red; font-weight:bold; }
+    </style>';
+    $response->setContent($content);
+    // ●after処理・終了
+
+
+    return $response;
+}
+
+
+
+
+リスト2-36
+'MyMW' => [
+    \App\Http\Middleware\HelloMiddleware::class,
+    \App\Http\Middleware\MyMiddleware::class,
+],
+
+
+
+
+リスト2-37
+Route::get('/hello', 'HelloController@index')
+    ->middleware('MyMW');
+
+
+
+
+リスト2-38
+public function index(Request $request)
+{
+    $data = [
+        'msg'=> $request->hello,
+        'data'=> $request->alldata,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-1
+CREATE TABLE `people` (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `name` TEXT NOT NULL,
+    `mail` TEXT, `age` INTEGER
+)
+
+
+
+
+リスト3-2
+<body>
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+    <ol>
+    @foreach($data as $item)
+    <li>{{$item->name}} [{{$item->mail}}, 
+        {{$item->age}}]</li>
+    @endforeach
+    </ol>
+    <hr>
+</body>
+
+
+
+
+リスト3-3
+// use Illuminate\Support\Facades\DB;        // 追加
+
+
+public function index()
+{
+    $result = DB::table('people')->get();
+    $data = [
+        'msg' => 'Database access.',
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-4
+public function index($id = -1)
+{
+    if ($id >= 0)
+    {
+        $msg = 'get ID <= ' . $id;
+        $result = DB::table('people')
+            ->where('id','<=', $id)->get();
+    }
+    else
+    {
+        $msg = 'get people records.';
+        $result = DB::table('people')->get();
+    }
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-5
+public function index($id = -1)
+{
+    if ($id >= 0)
+    {
+        $msg = 'get name like "' . $id . '".';
+        $result = DB::table('people')
+            ->where('name','like', '%' . $id . '%')->get();
+    }
+    else
+    {
+        $msg = 'get people records.';
+        $result = DB::table('people')->get();
+    }
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-6
+public function index()
+{
+    $msg = 'get people records.';
+    $first = DB::table('people')->first();
+    $last = DB::table('people')->orderBy('id','desc')->first();
+    $result = [$first, $last];
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-7
+public function index($id = -1)
+{
+    if ($id >= 0)
+    {
+        $msg = 'get name like "' . $id . '".';
+        $result = [DB::table('people')->find($id)];
+    }
+    else
+    {
+        $msg = 'get people records.';
+        $result = DB::table('people')->get();
+    }
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-8
+public function index()
+{
+    $name = DB::table('people')->pluck('name');
+    $value = $name->toArray();
+    $msg = implode(', ', $value); 
+    $result = DB::table('people')->get();
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-9
+public function index()
+{
+    $data = ['msg' => '', 'data' => []];
+    $msg = 'get: ';
+    $result = [];
+    DB::table('people')
+        ->chunkById(2, function($items) use (&$msg, &$result)
+    {
+        foreach($items as $item)
+        {   
+            $msg .= $item->id . ' ';
+            $result += array_merge($result, [$item]);
+            break;
+        }
+        return true;
+    });
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-10
+public function index()
+{
+    $data = ['msg' => '', 'data' => []];
+    $msg = 'get: ';
+    $result = [];
+    DB::table('people')->orderBy('name', 'asc')
+        ->chunk(2, function($items) use (&$msg, &$result)
+    {
+        foreach($items as $item)
+        {   
+            $msg .= $item->id . ':' . $item->name . ' ';
+            $result += array_merge($result, [$item]);
+            break;
+        }
+        return true;
+    });
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-11
+public function index($id)
+{
+    $data = ['msg' => '', 'data' => []];
+    $msg = 'get: ';
+    $result = [];
+    $count = 0;
+    DB::table('people')
+        ->chunkById(3, function($items) 
+            use (&$msg, &$result, &$id, &$count)
+    {
+        if ($count == $id)
+        {
+            foreach($items as $item)
+            {   
+                $msg .= $item->id . ':' . $item->name . ' ';
+                $result += array_merge($result, [$item]);
+            }
+            return false;
+        }
+        $count++;
+        return true;
+    });
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-12
+public function index($id)
+{
+    $ids = explode(',', $id);
+    $msg = 'get people.';
+    $result = DB::table('people')
+        ->whereBetween('id', $ids)
+        ->get();
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-13
+public function index($id)
+{
+    $ids = explode(',', $id);
+    $msg = 'get people.';
+    $result = DB::table('people')
+        ->whereIn('id' ,$ids)
+        ->get();
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-14
+public function index($id)
+{
+    $msg = 'show page: ' . $id;
+    $result = DB::table('people')
+        ->paginate(3, ['*'], 'page', $id);
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-15
+public function index(Request $request)
+{
+    $id = $request->query('page');
+    $msg = 'show page: ' . $id;
+    $result = DB::table('people')
+        ->paginate(3, ['*'], 'page', $id);
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-16
+Illuminate\Pagination\AbstractPaginator::defaultView("pagination::bootstrap-4");
+
+
+
+
+リスト3-17
+<link href="/css/app.css"  rel="stylesheet">
+
+
+
+
+リスト3-18
+{!! $data->links() !!}
+
+
+
+
+リスト3-19
+$result = DB::table('people')->simplePaginate(3);
+
+
+
+
+リスト3-20
+<?php
+namespace App;
+
+
+use Illuminate\Database\Eloquent\Model;
+
+
+class Person extends Model
+{
+}
+
+
+
+
+リスト3-21
+// use App\Person; を追加
+$result = Person::paginate(3);
+
+
+
+
+リスト3-22
+<?php
+namespace App\Http\Pagination;
+
+
+use Illuminate\Contracts\Pagination\Paginator;
+
+
+class MyPaginator
+{
+    private $paginator;
+
+
+    public function __construct(Paginator $paginator)
+    {
+        $this->paginator = $paginator;
+    }
+
+
+    public function link()
+    {
+        $prev = $this->paginator->currentPage() == 1 ?
+            ' disabled' : '';
+        $next = $this->paginator->currentPage() == 
+            $this->paginator->count() ? ' disabled' : '';
+        $result = '<ul class="pagination" role="navigation">';
+        $result .= '<li class="page-item' . $prev . 
+            '"><a class="page-link" href="' . 
+            $this->paginator->previousPageUrl() . 
+            '">←前のページ</a></li>';
+        $result .= '<li class="page-item disabled">' .
+            '<a class="page-link">'. 
+            $this->paginator->currentPage() . '</a></li>';
+        $result .= '<li class="page-item' . $next . 
+            '"><a class="page-link" href="' . 
+            $this->paginator->nextPageUrl() . 
+            '">次のページ→</a></li>';
+        $result .= '</ul>';
+        return $result;
+    }
+}
+
+
+
+
+リスト3-23
+// use App\Http\Pagination\MyPaginator;
+
+
+public function index(Request $request)
+{
+    $id = $request->query('page');
+    $msg = 'show page: ' . $id;
+    $result = Person::paginate(3);
+    $paginator = new MyPaginator($result);
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+        'paginator' => $paginator,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-24
+{!! $paginator->link() !!}
+
+
+
+
+リスト3-25
+<?php
+namespace App;
+
+
+use Illuminate\Database\Eloquent\Model;
+
+
+class Person extends Model
+{
+}
+
+
+
+
+リスト3-26
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $result = Person::get();
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+  
+
+
+リスト3-27
+<body>
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+    <table border="1">
+    @foreach($data as $item)
+    <tr>
+        <th>{{$item->id}}</th>
+        <td>{{$item->name}}</td>
+        <td>{{$item->mail}}</td> 
+        <td>{{$item->age}}</td>
+    </tr>
+    @endforeach
+    </table>
+    <hr>
+</body>
+
+
+
+
+リスト3-28
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $result = Person::get()->reject(function($person)
+    {
+        return $person->age < 20;
+    });
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-29
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $result = Person::get()->filter(function($person)
+    {
+        return $person->age < 50;
+    });
+    $result2 = Person::get()->filter(function($person)
+    {
+        return $person->age < 20;
+    });
+    $result3 = $result->diff($result2);
+
+
+    $data = [
+        'msg' => $msg,
+        'data' => $result2,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-30
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $keys = Person::get()->modelKeys();
+    $even = array_filter($keys, function($key)
+        {
+            return $key % 2 == 0;
+        });
+    $result = Person::get()->only($even);
+    
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-31
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $even = Person::get()->filter(function($item)
+    {
+        return $item->id % 2 == 0;
+    });
+    $even2 = Person::get()->filter(function($item)
+    {
+        return $item->age % 2 == 0;
+    });
+    $result = $even->merge($even2);
+    
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-32
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $even = Person::get()->filter(function($item)
+        {
+            return $item->id % 2 == 0;
+        });
+    $map = $even->map(function($item, $key)
+        {
+            return $item->id . ':' . $item->name;
+        });
+    
+    $data = [
+        'msg' => $map,
+        'data' => $even,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-33
+<?php
+namespace App;
+
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+
+
+class Person extends Model
+{
+    public function newCollection(array $models = [])
+    {
+        return new MyCollection($models);
+    }
+}
+
+
+class MyCollection extends Collection
+{
+    public function fields()
+    {
+        $item = $this->first();
+        return array_keys($item->toArray());
+    }
+}
+
+
+
+
+リスト3-34
+public function index(Request $request)
+{
+    $msg = 'show people record.';
+    $re = Person::get();
+    $fields = Person::get()->fields();
+    
+    $data = [
+        'msg' => implode(', ', $fields),
+        'data' => $re,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-35
+public function getNameAndIdAttribute()
+{
+    return $this->name . ' [id=' . $this->id . ']';
+}
+
+
+public function getNameAndMailAttribute()
+{
+    return $this->name . ' (' . $this->mail . ')';
+}
+
+
+public function getNameAndAgeAttribute()
+{
+    return $this->name . '(' . $this->age . ')';
+}
+public function getAllDataAttribute()
+{
+    return $this->name . '(' . $this->age . ')'
+        . ' [' . $this->mail . ']';
+}
+
+
+
+
+リスト3-36
+<table border="1">
+@foreach($data as $item)
+<tr>
+    <th>{{$item->id}}</th>
+    <td>{{$item->name_and_age}}</td>
+</tr>
+@endforeach
+</table>
+
+
+
+
+リスト3-37
+public function getNameAttribute($value)
+{
+    return strtoupper($value);
+}
+
+
+
+
+リスト3-38
+public function setNameAttribute($value)
+{
+    $this->attributes['name'] = strtoupper($value);
+}
+
+
+
+
+リスト3-39
+protected $guarded = ['id'];
+
+
+public static $rules = [
+    'name' => 'required',
+    'mail' => 'email',
+    'age' => 'integer',
+];
+
+
+
+
+リスト3-40
+public function save($id, $name)
+{
+    $record = Person::find($id);
+    $record->name = $name;
+    $record->save();
+    return redirect()->route('hello');
+}
+
+
+
+
+リスト3-41
+Route::get('/hello/{id}/{name}', 'HelloController@save');
+
+
+
+
+リスト3-42
+public function setAllDataAttribute(Array $value)
+{
+    $this->attributes['name'] = $value[0];
+    $this->attributes['mail'] = $value[1];
+    $this->attributes['age'] = $value[2];
+}
+
+
+
+
+リスト3-43
+public function other()
+{
+    
+    $person = new Person();
+    $person->all_data = ['aaa','bbb@ccc', 1234]; // ダミーデータ
+    $person->save();
+    
+    return redirect()->route('hello');
+}
+
+
+
+
+リスト3-44
+public function json($id = -1)
+{
+    if ($id == -1)
+    {
+        return Person::get()->toJson();
+    }
+    else
+    {
+        return Person::find($id)->toJson();
+    }
+}
+
+
+
+
+リスト3-45
+Route::get('/hello/json', 'HelloController@json');
+Route::get('/hello/json/{id}', 'HelloController@json');
+
+
+
+
+リスト3-46
+<!doctype html>
+<html lang="ja">
+<head>
+    <title>Index</title>
+    <link href="/css/app.css"  rel="stylesheet">
+    ……必要に応じて記述……
+    <script>
+    function doAction(){
+        var id = document.querySelector('#id').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/hello/json/' + id, true);
+        xhr.responseType = 'json';
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                var result = this.response;
+                document.querySelector('#name').textContent = result.name;
+                document.querySelector('#mail').textContent = result.mail;
+                document.querySelector('#age').textContent = result.age;
+            }
+        };
+        xhr.send();
+    }
+    </script>
+</head>
+<body>
+    <h1>Hello/Index</h1>
+    <div>
+        <input type="number" id="id" value="1">
+        <button onclick="doAction();">Click</button>
+    </div>
+    <ul>
+    <li id="name"></li>
+    <li id="mail"></li>
+    <li id="age"></li>
+    </ul>
+</body>
+
+
+</html>
+
+
+
+
+リスト3-47
+'algolia' => [
+    'id' => env('ALGOLIA_APP_ID', '……Application ID……'),
+    'secret' => env('ALGOLIA_SECRET', '……Admin API Key……'),
+],
+
+
+
+
+リスト3-48
+// use Laravel\Scout\Searchable; を追記
+
+
+class Person extends Model
+{
+    use Searchable;
+
+
+    ……略……
+}
+
+
+
+
+リスト3-49
+<body>
+    <h1>Hello/Index</h1>
+   <p>{{$msg}}</p>
+    <div>
+    <form action="/hello" method="post">
+        @csrf
+        <input type="text" id="find" name="find" 
+            value="{{$input}}">
+        <input type="submit">
+    </form>
+    </div>
+    <hr>
+    <table border="1">
+    @foreach($data as $item)
+    <tr>
+        <th>{{$item->id}}</th>
+        <td>{{$item->all_data}}</td>
+    </tr>
+    @endforeach
+    </table>
+    <hr>
+</body>
+
+
+
+
+リスト3-50
+public function index()
+{
+    $msg = 'show people record.';
+    $result = Person::get();
+    
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+public function send(Request $request)
+{
+    $input = $request->input('find');
+    $msg = 'search: ' . $input;
+    $result = Person::search($input)->get();
+
+
+    $data = [
+        'input' => $input,
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト3-51
+Route::get('/hello', 'HelloController@index');
+Route::post('/hello', 'HelloController@send');
+
+
+
+
+リスト3-52
+'tntsearch' => [
+    'storage' => storage_path(),
+],
+
+
+
+
+リスト3-53
+Person::get(['*'])->searchable();
+
+
+
+
+リスト3-54
+public function toSearchableArray()
+{
+    $array = $this->toArray();
+    $array['reverse'] = strrev($array['name']);
+
+
+    return $array;
+}
+
+
+
+
+リスト3-55
+Person::get(['*'])->searchable();
+
+
+
+
+リスト4-1
+<?php
+namespace App\Jobs;
+
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+
+
+class MyJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+
+    public function __construct()
+    {
+        //
+    }
+
+
+    public function handle()
+    {
+        // 
+    }
+}
+
+
+
+
+リスト4-2
+public function handle()
+{
+    echo '<p class="myjob">THIS IS MYJOB!</p>';
+}
+
+
+
+
+リスト4-3
+<?php
+namespace App\Providers;
+
+
+use Illuminate\Support\ServiceProvider;
+
+
+class MyJobProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->bindMethod(MyJob::class.'@handle', 
+                function($job, $app)
+        {
+            return $job->handle();
+        });
+    }
+
+
+    public function boot()
+    {
+    }
+}
+
+
+
+
+リスト4-4
+public function index()
+{
+    MyJob::dispatch(); //☆
+    $msg = 'show people record.';
+    $result = Person::get();
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト4-5
+// use App\Person; 追加
+
+
+class MyJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+
+    protected $person;
+
+
+    public function __construct(Person $person)
+    {
+        $this->person = $person;
+    }
+
+
+    public function handle()
+    {
+        $sufix = ' [+MYJOB]';
+        if (strpos($this->person->name, $sufix))
+        {
+            $this->person->name = str_replace( $sufix, '', $this->person->name);
+        } else {
+            $this->person->name .= $sufix;
+        }
+        $this->person->save();
+    }
+}
+
+
+
+
+リスト4-6
+public function index(Person $person = null)
+{
+    if ($person != null)
+    {
+        MyJob::dispatch($person);
+    }
+    $msg = 'show people record.';
+    $result = Person::get();
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト4-7
+Route::get('/hello/{person}', 'HelloController@index');
+
+
+
+
+リスト4-8
+public function index(Person $person = null)
+{
+    if ($person != null)
+    {
+        $qname = $person->id % 2 == 0 ? 'even' : 'odd';
+        MyJob::dispatch($person)->onQueue($qname);
+    }
+    $msg = 'show people record.';
+    $result = Person::get();
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト4-9
+<form action="/hello" method="post">
+    @csrf
+    ID: <input type="text" id="id" name="id">
+    <input type="submit">
+</form>
+
+
+
+
+リスト4-10
+// use Illuminate\Support\Facades\Storage; 追加
+
+
+public function index()
+{
+    $msg = 'show people record.';
+    $result = Person::get();
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+    
+public function send(Request $request)
+{
+    $id = $request->input('id');
+    $person = Person::find($id);
+    
+    dispatch(function() use ($person)
+    {
+        Storage::append('person_access_log.txt', 
+            $person->all_data);
+    });
+    return redirect()->route('hello');
+}
+
+
+
+
+リスト4-11
+Route::get('/hello', 'HelloController@index')->name('hello');
+Route::post('/hello', 'HelloController@send');
+
+
+
+
+リスト4-12
+<?php
+namespace App\Providers;
+
+
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+
+
+class EventServiceProvider extends ServiceProvider
+{
+    protected $listen = [
+        Registered::class => [
+            SendEmailVerificationNotification::class,
+        ],
+    ];
+
+
+    public function boot()
+    {
+        parent::boot();
+        //
+    }
+}
+
+
+
+
+リスト4-13
+protected $listen = [
+    Registered::class => [
+        SendEmailVerificationNotification::class,
+    ],
+    'App\Events\PersonEvent' => [
+        'App\Listeners\PersonEventListener',
+    ],
+];
+
+
+
+
+リスト4-14
+<?php
+namespace App\Events;
+
+
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
+
+class PersonEvent
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+
+    public function __construct()
+    {
+        //
+    }
+
+
+    public function broadcastOn()
+    {
+        return new PrivateChannel('channel-name');
+    }
+}
+
+
+
+
+リスト4-15
+<?php
+namespace App\Events;
+
+
+use Illuminate\Queue\SerializesModels;
+
+
+class PersonEvent
+{
+    use SerializesModels;
+
+
+    public $person;
+
+
+    public function __construct(Person $person)
+    {
+        $this->person = $person;
+    }
+
+
+}
+
+
+
+
+リスト4-16
+<?php
+namespace App\Listeners;
+
+
+use App\Events\PersonEvent;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+
+class PersonEventListener
+{
+
+
+    public function __construct()
+    {
+        //
+    }
+
+
+    public function handle(PersonEvent $event)
+    {
+        //
+    }
+}
+
+
+
+
+リスト4-17
+// use App\Person; 追加
+// use Illuminate\Support\Facades\Storage; 追加
+
+
+class PersonEventListener
+{
+    
+    public function __construct()
+    {
+        //
+    }
+
+
+    public function handle(PersonEvent $event)
+    {
+        
+        Storage::append('person_access_log.txt', 
+            '[PersonEvent] ' . now() . ' ' . 
+            $event->person->all_data);
+    }
+}
+
+
+
+
+リスト4-18
+// use App\Events\PersonEvent; 追加
+
+
+public function send(Request $request)
+{
+    $id = $request->input('id');
+    $person = Person::find($id);
+    
+    event(new PersonEvent($person));
+
+
+    $data = [
+        'input' => '',
+        'msg' => 'id='. $id,
+        'data' => [$person],
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト4-19
+<?php
+namespace App\Listeners;
+
+
+class MyEventSubscriber
+{
+    
+    public function subscribe($events)
+    {
+        $events->listen(
+            'App\Events\PersonEvent',
+            'App\Listeners\PersonEventListener@handle'
+        );
+    }
+}
+
+
+
+
+リスト4-20
+protected $subscribe = [
+    'App\Listeners\MyEventSubscriber',
+];
+
+
+
+
+リスト4-21
+public function shouldDiscoverEvents()
+{
+    return true;
+}
+
+
+
+
+リスト4-22
+// use Illuminate\Contracts\Queue\ShouldQueue; 追加
+
+
+class PersonEventListener implements ShouldQueue
+{
+    ……略……
+}
+
+
+
+
+リスト4-23
+<?php
+namespace App\Console;
+
+
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+
+
+class Kernel extends ConsoleKernel
+{
+    
+    protected $commands = [
+        //
+    ];
+
+
+    protected function schedule(Schedule $schedule)
+    {
+        // $schedule->command('inspire')
+        //          ->hourly();
+    }
+
+
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+
+        require base_path('routes/console.php');
+    }
+}
+
+
+
+
+リスト4-24――mycmd.bat（Windowsの場合）
+echo [%date% %time%] This is MyCmd.bat. >> mycmd_log.txt
+
+
+
+
+リスト4-25――mycmd.sh（macOSの場合）
+#!/bin/sh
+echo "[$(date)] This is MyCmd.sh." >> mycmd_log.txt
+
+
+（※あらかじめ、chmod 755 mycmd.shを実行しておく）
+
+
+
+
+リスト4-26――Windowsの場合
+protected function schedule(Schedule $schedule)
+{
+    $schedule->exec('mycmd');
+}
+
+
+
+
+リスト4-27――macOSの場合
+protected function schedule(Schedule $schedule)
+{
+    $schedule->exec('./mycmd.sh');
+}
+
+
+
+
+リスト4-28
+protected function schedule(Schedule $schedule)
+{
+    $schedule->command('queue:work --stop-when-empty');
+}
+
+
+
+
+リスト4-29
+// use App\Person; 追加
+// use App\Jobs\MyJob; 追加
+
+
+protected function schedule(Schedule $schedule)
+{
+    $count = Person::all()->count();
+    $id = rand(0, $count) + 1;
+    $schedule->call(function() use ($id)
+    {
+        $person = Person::find($id);
+        MyJob::dispatch($person);
+    });
+}
+
+
+
+
+リスト4-30
+// use App\Person; 追加
+// use App\Jobs\MyJob; 追加
+// use Illuminate\Support\Facades\Storage; 追加
+
+
+class ScheduleObj
+{
+    private $person;
+
+
+    public function __construct($id)
+    {
+        $this->person = Person::find($id);
+    }
+
+
+    public function __invoke()
+    {
+        Storage::append('person_access_log.txt', 
+            $this->person->all_data);
+        MyJob::dispatch($this->person);
+        return 'true';
+    }
+}
+
+
+
+
+リスト4-31
+// use App\Person; 追加
+// use ScheduleObj; 追加
+
+
+protected function schedule(Schedule $schedule)
+{
+    $count = Person::all()->count();
+    $id = rand(0, $count) + 1;
+    $obj = new ScheduleObj($id);
+    $schedule->call($obj);
+}
+
+
+
+
+リスト4-32
+// use App\Person; 追加
+// use Illuminate\Support\Facades\Storage; 追加
+
+
+class MyJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+
+    protected $person;
+
+
+    public function getPersonId()
+    {
+        return $this->person->id;
+    }
+    
+    public function __construct($id)
+    {
+        $this->person = Person::find($id)->first();
+    }
+
+
+    public function __invoke()
+    {
+        $this->handle();
+    }
+
+
+    public function handle()
+    {
+        $this->doJob();
+    }
+    
+    public function doJob()
+    {
+        $sufix = ' [+MYJOB]';
+        if (strpos($this->person->name, $sufix))
+        {
+            $this->person->name = str_replace( $sufix, '', $this->person->name);
+        } else {
+            $this->person->name .= $sufix;
+        }
+        $this->person->save();
+
+
+        Storage::append('person_access_log.txt', 
+            $this->person->all_data);
+    }
+}
+
+
+
+
+リスト4-33
+protected function schedule(Schedule $schedule)
+{
+    $count = Person::all()->count();
+    $id = rand(0, $count) + 1;
+
+
+    /* インスタンス実行
+    $schedule->call(new MyJob($id)); */
+    
+    /* ディスパッチする
+    $schedule->call(function() use($id)
+    {
+        MyJob::dispatch($id);
+    }); */
+}
+
+
+
+
+リスト4-34
+protected function schedule(Schedule $schedule)
+{
+    $count = Person::all()->count();
+    $id = rand(0, $count) + 1;
+    $schedule->job(new MyJob($id));
+}
+
+
+リスト5-1
+{
+    "private": true,
+    "scripts": {
+        ……略……
+    },
+    "devDependencies": {
+        "axios": "^0.18",
+        "bootstrap": "^4.0.0",
+        "cross-env": "^5.1",
+        "jquery": "^3.2",
+        "laravel-mix": "^4.0.7",
+        "lodash": "^4.17.5",
+        "popper.js": "^1.12",
+        "resolve-url-loader": "^2.3.1",
+        "sass": "^1.15.2",
+        "sass-loader": "^7.1.0",
+        "vue": "^2.5.17",
+        "vue-template-compiler": "^2.6.10"
+    }
+}
+
+
+
+
+リスト5-2
+<!doctype html>
+<html lang="ja">
+<head>
+    <title>Index</title>
+    <link href="{{ mix('css/app.css') }}" 
+        rel="stylesheet" type="text/css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body style="padding:10px;">
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+
+
+    <div id="app">
+        <example-component></example-component>
+    </div>
+    <script src="{{ mix('js/app.js') }}"></script>
+
+
+</body>
+
+
+</html> 
+
+
+
+
+リスト5-3
+<template>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Example Component</div>
+
+
+                    <div class="card-body">
+                        I'm an example component.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<script>
+    export default {
+        mounted() {
+            console.log('Component mounted.')
+        }
+    }
+</script>
+
+
+
+
+リスト5-4
+public function index()
+{
+    $data = [
+        'msg' => 'This is Vue.js application.',
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト5-5
+Route::get('/hello', 'HelloController@index');
+
+
+
+
+リスト5-6
+<template>
+    <div class="container">
+        <p>{{msg}}</p>
+        <hr>
+        <input type="text" v-model="name">
+        <button v-on:click="doAction">click</button>
+    </div>
+</template>
+
+
+<script>
+export default {
+    data:function(){
+        return {
+            msg:'please your name:',
+            name:'',
+        };
+    },
+    methods:{
+        doAction:function(){
+            this.msg = 'Hello, ' + this.name + '!!';
+        }
+    }
+}
+</script>
+
+
+
+
+リスト5-7
+Vue.component('my-component', require('./components/MyComponent.vue').default);
+
+
+
+
+リスト5-8
+<div id="app">
+    <my-component></my-component>
+</div>
+
+
+
+
+リスト5-9
+public function json($id = -1)
+{
+    if ($id == -1)
+    {
+        return Person::get()->toJson();
+    }
+    else
+    {
+        return Person::find($id)->toJson();
+    }
+}
+
+
+
+
+リスト5-10
+Route::get('/hello/json', 'HelloController@json');
+Route::get('/hello/json/{id}', 'HelloController@json');
+
+
+
+
+リスト5-11
+<template>
+    <div class="container">
+        <p>{{msg}}</p>
+        <hr>
+        <ul>
+            <li v-for="(person,key) in people">
+                {{person.id}}: {{person.name}} [{{person.mail}}] ({{person.age}})
+            </li>
+        </ul>
+    </div>
+</template>
+
+
+<script>
+const axios = require('axios');
+
+
+export default {
+    mounted () {
+        axios.get('/hello/json')
+            .then(response =>{
+                this.people = response.data;
+                this.msg = 'get data!';
+            });
+    },
+    data:function(){
+        return {
+            msg:'wait...',
+            name:'',
+            people:[],
+        };
+    },
+    methods:{
+        doAction:function(){
+            this.msg = 'Hello, ' + this.name + '!!';
+        }
+    },
+}
+</script>
+
+
+
+
+リスト5-12
+{
+    "private": true,
+    "scripts": {
+       ……中略……
+    },
+    "devDependencies": {
+        "@babel/preset-react": "^7.0.0",  // ☆
+        "axios": "^0.18",
+        "bootstrap": "^4.0.0",
+        "cross-env": "^5.1",
+        "jquery": "^3.2",
+        "laravel-mix": "^4.0.7",
+        "lodash": "^4.17.5",
+        "popper.js": "^1.12",
+        "react": "^16.2.0",  // ☆
+        "react-dom": "^16.2.0",  // ☆
+        "resolve-url-loader": "^2.3.1",
+        "sass": "^1.15.2",
+        "sass-loader": "^7.1.0",
+        "vue-template-compiler": "^2.6.10"
+    }
+}
+
+
+
+
+リスト5-13
+public function index()
+{
+    $data = [
+        'msg' => 'This is React application.',
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト5-14――/routes/web.phpに用意するルート情報
+Route::get('/hello', 'HelloController@index');
+
+
+
+
+リスト5-15
+<!doctype html>
+<html lang="ja">
+<head>
+    <title>Index</title>
+    <link href="{{ mix('css/app.css') }}" 
+        rel="stylesheet" type="text/css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body style="padding:10px;">
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+
+
+    <div id="example"></div>
+    
+    <script src="{{asset('/js/app.js')}}"></script>
+</body>
+
+
+</html> 
+
+
+リスト5-16
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+
+export default class Example extends Component {
+    render() {
+        return (
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-8">
+                        <div className="card">
+                            <div className="card-header">Example Component</div>
+
+
+                            <div className="card-body">I'm an example component!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+
+if (document.getElementById('example')) {
+    ReactDOM.render(<Example />, document.getElementById('example'));
+}
+
+
+
+
+リスト5-17
+require('./components/Example');
+
+
+
+
+リスト5-18
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+
+export default class MyComponent extends Component {
+
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            num:0,
+            msg:'ok',
+        };
+        this.doChange = this.doChange.bind(this);
+    }
+
+
+    doChange(event) {
+        let n = event.target.value;
+        this.setState((state)=>({
+            num: n,
+            msg: 'count: ' + n,
+        }));
+    }
+
+
+    render() {
+        return (
+            <div className="container">
+                <p>{this.state.msg}</p>
+                <div>
+                    <input type="number" id="num"
+                        onChange={this.doChange} />
+                </div>
+            </div>
+        );
+    }
+}
+
+
+if (document.getElementById('mycomponent')) {
+    ReactDOM.render(<MyComponent />, document.getElementById('mycomponent'));
+}
+
+
+
+
+リスト5-19
+require('./components/MyComponent');
+
+
+
+
+リスト5-20
+<div id="mycomponent"></div>
+
+
+
+
+リスト5-21
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+
+export default class MyComponent extends Component {
+
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            num:0,
+            msg:'ok',
+        };
+        this.doChange = this.doChange.bind(this);
+        this.doAction = this.doAction.bind(this);
+    }
+
+
+    doChange(event) {
+        let n = event.target.value;
+        this.setState((state)=>({
+            num: n,
+            person:null,
+        }));
+    }
+    doAction(event) {
+        this.setState((state)=>({
+            msg:'wait...',
+        }));
+        axios.get('/hello/json/' + this.state.num)
+            .then(response =>{
+                let person = response.data;
+                let msg = person.id + ':' + person.name
+                    + ' [' + person.mail + '] ('
+                    + person.age + ')';
+                this.setState((state)=>({
+                    person:person,
+                    msg:msg
+                }));
+            });
+
+
+    }
+
+
+    render() {
+        return (
+            <div className="container">
+                <p>{this.state.msg}</p>
+                <div>
+                    <input type="number" id="num"
+                        onChange={this.doChange} />
+                    <button onClick={this.doAction}>Click</button>
+                </div>
+            </div>
+        );
+    }
+}
+
+
+if (document.getElementById('mycomponent')) {
+    ReactDOM.render(<MyComponent />, document.getElementById('mycomponent'));
+}
+
+
+
+
+リスト5-22
+mix.js([
+   'resources/ngapp/dist/ngapp/runtime.js',
+   'resources/ngapp/dist/ngapp/vendor.js',
+   'resources/ngapp/dist/ngapp/styles.js',
+   'resources/ngapp/dist/ngapp/polyfills.js',
+   'resources/ngapp/dist/ngapp/main.js'
+ ], 'public/js/app.js');
+
+
+mix.sass(
+   'resources/sass/app.scss', 
+   'public/css/app.css'
+);
+
+
+
+
+リスト5-23
+<!doctype html>
+<html lang="ja">
+<head>
+    <title>Index</title>
+    <link href="{{mix('/css/app.css')}}" 
+            rel="stylesheet" type="text/css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body style="padding:10px;">
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+
+
+    <app-root></app-root>
+    
+    <script src="{{mix('/js/app.js')}}"></script>
+</body>
+</html> 
+
+
+
+
+リスト5-24
+public function index(PowerMyService $service)
+{
+    $data = [
+        'msg' => 'This is Angular application.',
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト5-25
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+
+import { MyComponent } from './my/my.component';
+
+
+@NgModule({
+  declarations: [
+    MyComponent
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
+  providers: [],
+  bootstrap: [MyComponent]
+})
+export class AppModule { }
+
+
+
+
+リスト5-26
+<div>
+  <p>{{message}}</p>
+  <input type="text" [formControl]="input" />
+  <button (click)="doAction()">Click</button>
+</div>
+
+
+
+
+リスト5-27
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+
+@Component({
+  selector: 'app-my',
+  templateUrl: './my.component.html',
+  styleUrls: ['./my.component.css']
+})
+export class MyComponent implements OnInit {
+
+
+  message:string;
+  input:FormControl;
+
+
+  constructor() { }
+
+
+  ngOnInit() {
+    this.message = 'please input your name:';
+    this.input = new FormControl('noname');
+  }
+
+
+  doAction() {
+    this.message = 'Hello, ' + this.input.value + '!!';
+  }
+}
+
+
+
+
+リスト5-28
+<app-my></app-my>
+
+
+
+
+リスト5-29
+import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import axios from 'axios';
+
+
+@Component({
+  selector: 'app-my',
+  templateUrl: './my.component.html',
+  styleUrls: ['./my.component.css']
+})
+export class MyComponent implements OnInit {
+
+
+  message:string;
+  input:FormControl;
+
+
+  constructor() { }
+
+
+  ngOnInit() {
+    this.message = 'please input your name:';
+    this.input = new FormControl('noname');
+  }
+
+
+  doAction() {
+    axios.get('/hello/json/' + this.input.value)
+      .then(response =>{
+          let person = response.data;
+          let msg = person.id + ':' + person.name
+              + ' [' + person.mail + '] ('
+              + person.age + ')';
+          this.message = msg;
+      });
+  }
+}
+
+
+
+
+リスト6-1
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit ……略……>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+
+
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./app</directory>
+        </whitelist>
+    </filter>
+    <php>
+        ……<server/>タグを必要なだけ記述……
+    </php>
+</phpunit>
+
+
+
+
+リスト6-2
+<?php
+namespace Tests\Unit;
+
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
+class ExampleTest extends TestCase
+{
+    public function testBasicTest()
+    {
+        $this->assertTrue(true);
+    }
+}
+
+
+
+
+リスト6-3
+<?php
+namespace Tests\Feature;
+
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+
+class ExampleTest extends TestCase
+{
+    public function testBasicTest()
+    {
+        $response = $this->get('/');
+
+
+        $response->assertStatus(200);
+    }
+}
+
+
+
+
+リスト6-4
+public function testBasicTest()
+{
+    $this->get('/')->assertStatus(200);
+    $this->get('/hello')->assertOk();
+    $this->post('/hello')->assertOk();
+    $this->get('/hello/1')->assertOk();
+    $this->get('/hoge')->assertStatus(404);
+    $this->get('/hello')->assertSeeText('Index');
+    $this->get('/hello')->assertSee('<h1>');
+    $this->get('/hello')->assertSeeInOrder(['<html','<head','<body','<h1>']);
+    $this->get('/hello/json/1')->assertSeeText('YAMADA-TARO');
+    $this->get('/hello/json/2')->assertExactJson(
+        ['id'=>2, 'name'=>'HANAKO',
+        'mail'=>'hanako@flower','age'=> '19',
+        'created_at'=>'2019-05-16 02:10:10',
+        'updated_at'=>'2019-05-16 02:10:10']);
+}
+
+
+
+
+リスト6-5
+'testing' => [
+    'driver' => ドライバの指定,
+    'database' => データベース名,
+    'host' => ホストの指定,
+    'port' => ポート番号,
+    'username' => 利用者名,
+    'password' => パスワード,
+    ……略……
+],
+
+
+
+
+リスト6-6
+<env name="DB_DATABASE" value="データベース名"/>
+
+
+
+
+リスト6-7
+<?php
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+
+class CreatePeopleTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('people', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('mail');
+            $table->integer('age');
+            $table->timestamps();
+        });
+    }
+
+
+    public function down()
+    {
+        Schema::dropIfExists('people');
+    }
+}
+
+
+
+
+リスト6-8
+<?php
+use Illuminate\Database\Seeder;
+
+
+class PeopleTableSeeder extends Seeder
+{
+
+
+    public function run()
+    {
+        DB::table('people')->insert([
+            'name' =>'YAMADA-TARO',
+            'mail' => 'taro@yamada',
+            'age' => 34,
+        ]);
+
+
+        ……必要なだけ記述……
+    }
+}
+
+
+
+
+リスト6-9
+<?php
+use Illuminate\Database\Seeder;
+
+
+class DatabaseSeeder extends Seeder
+{
+    public function run()
+    {
+        $this->call( [PeopleTableSeeder::class] );
+    }
+}
+
+
+
+
+リスト6-10
+public function testBasicTest()
+{
+    $data = [
+        'id' => 1,
+        'name' => 'YAMADA-TARO',
+        'mail' => 'taro@yamada',
+        'age' => '34'
+    ];
+    $this->assertDatabaseHas('people',$data);
+    // $data['id'] =2; //★
+    $this->assertDatabaseMissing('people', $data);
+}
+
+
+
+
+リスト6-11
+public function testBasicTest()
+{
+    $data = [
+        'id' => 1,
+        'name' => 'DUMMY',
+        'mail' => 'dummy@mail',
+        'age' => 0,
+    ];
+    $person = new Person();
+    $person->fill($data)->save();
+    $this->assertDatabaseHas('people',$data);
+
+
+    $person->name = 'NOT-DUMMY';
+    $person->save();
+    $this->assertDatabaseMissing('people',$data);
+    $data['name'] = 'NOT-DUMMY';
+    $this->assertDatabaseHas('people',$data);
+
+
+    $person->delete();
+    $this->assertDatabaseMissing('people',$data);
+}
+
+
+
+
+リスト6-12
+// use Illuminate\Foundation\Testing\RefreshDatabase; を追記
+
+
+use RefreshDatabase;
+
+
+
+
+リスト6-13
+public function testBasicTest()
+{
+    $this->seed(DatabaseSeeder::class);
+    $person = Person::find(1);
+    $data = $person->toArray();
+
+
+    $this->assertDatabaseHas('people', $data);
+
+
+    $person->delete();
+    $this->assertDatabaseMissing('people', $data);
+}
+
+
+
+
+リスト6-14
+<?php
+
+
+/* @var $factory \Illuminate\Database\Eloquent\Factory */
+
+
+use App\Model;
+use Faker\Generator as Faker;
+
+
+$factory->define(Model::class, function (Faker $faker) {
+    return [
+        //
+    ];
+});
+
+
+
+
+リスト6-15
+<?php
+use App\Person;
+use Faker\Generator as Faker;
+
+
+$factory->define(Person::class, function (Faker $faker) {
+    return [
+        'name' => $faker->name,
+        'mail' => $faker->email,
+        'age' => $faker->numberBetween(1,100),
+    ];
+});
+
+
+
+
+リスト6-16
+public function testBasicTest()
+{
+    for($i = 0;$i < 100;$i++)
+    {
+        factory(Person::class)->create();
+    }
+    $count = Person::get()->count();
+    $person = Person::find(rand(1, $count));
+    $data = $person->toArray();
+    print_r($data);
+
+
+    $this->assertDatabaseHas('people', $data);
+
+
+    $person->delete();
+    $this->assertDatabaseMissing('people', $data);
+ 
+}
+
+
+
+
+リスト6-17
+$factory->state(Person::class, 'upper', function($faker)
+{
+    return [
+        'name' => strtoupper($faker->name()),
+    ];
+});
+$factory->state(Person::class, 'lower', function($faker)
+{
+    return [
+        'name' => strtolower($faker->name()),
+    ];
+});
+
+
+
+
+リスト6-18
+public function testBasicTest()
+{
+    $list = [];
+    for($i = 0;$i < 10;$i++)
+    {
+        $p1 = factory(Person::class)->create();
+        $p2 = factory(Person::class)->states('upper')->create();
+        $p3 = factory(Person::class)->states('lower')->create();
+        $p4 = factory(Person::class)->states('upper')
+                ->states('lower')->create();
+        $list = array_merge($list, [$p1->id, $p2->id, 
+                $p3->id, $p4->id]);
+    }
+    
+    for($i = 0;$i < 10;$i++)
+    {
+        shuffle($list);
+        $item = array_shift($list);
+        $person = Person::find($item);
+        $data = $person->toArray();
+        print_r($data);
+        
+        $this->assertDatabaseHas('people', $data);
+
+
+        $person->delete();
+        $this->assertDatabaseMissing('people', $data);
+    }
+}
+
+
+
+
+リスト6-19
+$factory->afterMaking(Person::class, 
+        function ($person, $faker)
+{
+    $person->name .= ' [making]';
+    $person->save();
+});
+
+
+$factory->afterCreating(Person::class, 
+        function ($person, $faker)
+{
+    $person->name .= ' [creating]';
+    $person->save();
+});
+
+
+$factory->afterMakingState(Person::class, 'upper',
+        function ($person, $faker)
+{
+    $person->name .= ' [making state]';
+    $person->save();
+});
+
+
+$factory->afterCreatingState(Person::class, 'lower', 
+        function ($person, $faker)
+{
+    $person->name .= ' [creating state]';
+    $person->save();
+});
+
+
+
+
+リスト6-20
+// use App\Person; 追加
+// use Illuminate\Support\Facades\Bus; 追加
+// use App\Jobs\MyJob; 追加
+
+
+public function testBasicTest()
+{
+    $id = 1;
+    $data = [
+        'id' => $id,
+        'name' => 'DUMMY',
+        'mail' => 'dummy@mail',
+        'age' => 0,
+    ];
+    $person = new Person();
+    $person->fill($data)->save();
+    $this->assertDatabaseHas('people',$data);
+
+
+    Bus::fake();
+    Bus::assertNotDispatched(MyJob::class);
+    MyJob::dispatch($id);
+    Bus::assertDispatched(MyJob::class);
+}
+
+
+
+
+リスト6-21
+public function testBasicTest()
+{
+    $id = 1;
+    $data = [……略……];
+    $person = new Person();
+    $person->fill($data)->save();
+    $this->assertDatabaseHas('people',$data);
+
+
+    Bus::fake();
+    MyJob::dispatch($id);
+    
+    Bus::assertDispatched(MyJob::class, 
+        function($job) use ($id)
+    {
+        $p = Person::find($id)->first();
+        return $job->getPersonId() == $p->id;
+    });
+}
+
+
+
+
+リスト6-22
+// use Illuminate\Support\Facades\Event; 追加
+// use App\Events\PersonEvent; 追加
+
+
+public function testBasicTest()
+{
+    factory(Person::class)->create();
+    $person = factory(Person::class)->create();
+
+
+    Event::fake();
+    Event::assertNotDispatched(PersonEvent::class);
+    event(new PersonEvent($person));
+    Event::assertDispatched(PersonEvent::class);
+    Event::assertDispatched(PersonEvent::class,
+        function($event) use ($person)
+    {
+        return $event->person === $person;
+    });
+}
+
+
+
+
+リスト6-23
+public function index($id = null)
+{
+    if ($id != null)
+    {
+        event(PersonEvent::class);
+        $result = Person::find($id);
+    } else {
+        $result = Person::get();
+    }
+    $msg = 'show people record.';
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト6-24
+Route::get('/hello/{id}', 'HelloController@index');
+
+
+
+
+リスト6-25
+public function testBasicTest()
+{
+    factory(Person::class)->create();
+    $person = factory(Person::class)->create();
+
+
+    Event::fake();
+    $this->get('/hello/' . $person->id)->assertOk();
+    Event::assertDispatched(PersonEvent::class);
+}
+
+
+
+
+リスト6-26
+// use Illuminate\Support\Facades\Queue; 追加
+// use App\Listeners\PersonEventListener; 追加
+// use Illuminate\Events\CallQueuedListener; 追加
+
+
+public function testBasicTest()
+{
+    factory(Person::class)->create();
+    $person = factory(Person::class)->create();
+
+
+    Queue::fake();
+    Queue::assertNothingPushed();
+
+
+    MyJob::dispatch($person->id);
+    Queue::assertPushed(MyJob::class);
+
+
+    event(PersonEvent::class);
+    $this->get('/hello/' . $person->id)->assertOk();
+    Queue::assertPushed(CallQueuedListener::class, 2);
+    Queue::assertPushed(CallQueuedListener::class, 
+            function($job)
+    {
+       return $job->class == PersonEventListener::class;
+    });
+}
+
+
+
+
+リスト6-27
+public function testBasicTest()
+{
+   factory(Person::class)->create();
+   $person = factory(Person::class)->create();
+
+
+   Queue::fake();
+   Queue::assertNothingPushed();
+
+
+   MyJob::dispatch($person->id)->onQueue('myjob');
+    Queue::assertPushed(MyJob::class);
+   Queue::assertPushedOn('myjob', MyJob::class);
+}
+
+
+
+
+リスト6-28
+// use App\MyClasses\PowerMyService; 追加
+
+
+public function index(PowerMyService $service)
+{
+    $service->setId(1);
+    $msg = $service->say();
+    $result = Person::get();
+    $data = [
+        'input' => '',
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト6-29
+public function testBasicTest()
+{
+    $response = $this->get('/hello');
+    $content = $response->getContent();
+    echo $content;
+    $response->assertSeeText(
+            'あなたが好きなのは、1番のリンゴですね！',
+            $content);
+}
+
+
+
+
+リスト6-30
+// use Mockery; 追加
+// use App\MyClasses\PowerMyService; 追加
+
+
+public function testBasicTest()
+{
+    $msg = '*** OK ***';
+    
+    $mock = Mockery::mock(PowerMyService::class);
+    
+    $mock->shouldReceive('setId')
+            ->withArgs([1])
+            ->once()
+            ->andReturn(null);
+
+
+    $mock->shouldReceive('say')
+            ->once()
+            ->andReturn($msg);
+
+
+    $this->instance(PowerMyService::class, $mock);
+
+
+    $response = $this->get('/hello');
+    $content = $response->getContent();
+    $response->assertSeeText($msg, $content);
+}
+
+
+
+
+リスト7-1
+public function index($id = -1)
+{
+    if ($id> 0)
+    {
+        $msg = 'id = ' . $id;
+        $result = [Person::find($id)];
+    }
+    else
+    {
+        $msg = 'all people data.';
+        $result = Person::get();
+    }
+    $data = [
+        'msg' => $msg,
+        'data' => $result,
+    ];
+    // dump($data); //☆
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト7-2
+<body style="padding:10px;">
+    <h1>Hello/Index</h1>
+    <p>{{$msg}}</p>
+    <ul>
+    @foreach($data as $item)
+    <li>{{$item->all_data}}</li>
+    @endforeach
+    </ul>
+</body>
+
+
+
+
+リスト7-3
+Route::get('/hello/{id?}', 'HelloController@index');
+
+
+
+
+リスト7-4
+GET http://localhost:8000/hello/1
+---------------------------------
+
+
+ ------------ ------------------------------------------
+  date         Tue, 04 Jun 2019 04:04:22 +0000
+  controller   "HelloController"
+  source       HelloController.php on line 61
+  file         app\Http\Controllers\HelloController.php
+ ------------ ------------------------------------------
+
+
+array:2 [
+  "msg" => "id = 1"
+  "data" => array:1 [
+    0 => App\Person {#550
+      #guarded: array:1 [
+        0 => "id"
+      ]
+      ……略……
+      #attributes: array:6 [
+        "id" => "1"
+        "name" => "YAMADA-TARO"
+        "mail" => "taro@yamada"
+        "age" => "34"
+        "created_at" => null
+        "updated_at" => null
+      ]
+      ……略……
+    }
+  ]
+]
+
+
+
+
+リスト7-5
+return [
+    'commands' => [
+        // App\Console\Commands\ExampleCommand::class,
+    ],
+
+
+    'dont_alias' => [],
+];
+
+
+
+
+リスト7-6
+// use Illuminate\Support\Facades\Artisan; 追加
+
+
+public function clear()
+{
+    Artisan::call('cache:clear');
+    Artisan::call('event:clear');
+    return redirect()->route('hello');
+}
+
+
+
+
+リスト7-7
+Route::get('/hello/clear', 'HelloController@clear');
+Route::get('/hello', 'HelloController@index')->name('hello');
+
+
+
+
+リスト7-8
+// use Illuminate\Support\Facades\Artisan; 追加
+// use Symfony\Component\Console\Output\BufferedOutput; 追加
+
+
+public function index($id = -1)
+{
+    $output = new BufferedOutput;
+    Artisan::call('route:list', [], $output);
+    $msg = $output->fetch();
+    
+    $data = [
+        'msg' => $msg,
+     ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト7-9
+<body style="padding:10px;">
+    <h1>Hello/Index</h1>
+    <pre>{{$msg}}</pre>
+</body>
+
+
+
+
+リスト7-10
+public function index($id = -1)
+{
+    $opt = [
+        '--method'=>'get',
+        '--path'=>'hello',
+        '--sort'=>'uri',
+        '--compact'=>null,
+    ];
+    $output = new BufferedOutput;
+    Artisan::call('route:list', $opt, $output);
+    $msg = $output->fetch();
+    
+    $data = [
+        'msg' => $msg,
+     ];
+    return view('hello.index', $data);
+}
+
+
+
+
+リスト7-11
+<?php
+namespace App\Console\Commands;
+
+
+use Illuminate\Console\Command;
+
+
+class MyCommand extends Command
+{
+
+
+    protected $signature = 'command:name';
+
+
+    protected $description = 'Command description';
+
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+
+    public function handle()
+    {
+        //
+    }
+
+
+}
+
+
+
+
+リスト7-12
+protected $signature = 'my:cmd';
+protected $description = 'This is my first command!';
+
+
+
+
+リスト7-13
+// use Illuminate\Foundation\Inspiring; 追加
+
+
+public function handle()
+{
+    echo "\n＊今日の格言＊\n\n";
+    echo Inspiring::quote();
+    echo "\n\n";
+}
+
+
+
+
+リスト7-14
+<?php
+namespace App\Console\Commands;
+
+
+use Illuminate\Console\Command;
+use App\Person;
+
+
+class MyCommand extends Command
+{
+    protected $signature = 'my:cmd {person?}';
+    protected $description = 'This is my first command!';
+    
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+
+    public function handle()
+    {
+        $p = $this->argument('person');
+        if ($p != null)
+        {
+            $person = Person::find($p);
+            if ($person != null)
+            {
+                echo "\nPerson id = " . $p . ":\n";
+                echo $person->all_data . "\n";
+                return;
+            }
+        }
+        echo "can't get Person...";
+    }
+}
+
+
+
+
+リスト7-15
+protected $signature = 'my:cmd {num?*}';
+
+
+
+
+リスト7-16
+public function handle()
+{
+    $arr = $this->arguments();
+    $re = 0;
+    foreach ($arr['num'] as $item)
+    {
+        $re += (int)$item;
+    }
+    echo "total: " . $re;
+}
+
+
+
+
+リスト7-17
+protected $signature = 'my:cmd {--id=?} {--name=?}';
+
+
+
+
+リスト7-18
+public function handle()
+{
+    $id = $this->option('id');
+    $name = $this->option('name');
+    if ($id != '?')
+    {
+        $p = Person::find($id);
+    }
+    else
+    {
+        if ($name != '?')
+        {
+            $p = Person::where('name', $name)->first();
+        }
+        else
+        {
+            $p = null;
+        }
+    }
+    if ($p != null)
+    {
+        echo "Person id = " . $p->id . ":\n" . $p->all_data;
+    }
+    else{
+        echo 'no Person find...';
+    }
+}
+
+
+
+
+リスト7-19
+protected $signature = 'my:cmd {--stones=15}{--max=3}';
+
+
+
+
+リスト7-20
+public function handle()
+{
+    $stones = $this->option('stones');
+    $max = $this->option('max');
+    echo "*** start ***\n";
+    while($stones > 0)
+    {
+        echo ("stones: $stones\n");
+        $ask = $this->ask("you:");
+        $you = (int)$ask;
+        $you = $you > 0 && $you <= $max ? $you : 1;
+        $stones -= $you;
+        echo ("stones: $stones\n");
+        if ($stones <= 0)
+        {
+            echo "you lose...\n";
+            break;
+        }
+        $me = ($stones - 1) % (1 + $max);
+        $me = $me == 0 ? 1 : $me;
+        $stones -= $me;
+        echo "me: $me\n";
+        if ($stones <= 0)
+        {
+            echo "you win!!\n";
+            break;
+        }
+    }
+    echo "--- end ---\n";
+}
+
+
+
+
+リスト7-21
+protected $signature = 'my:cmd';
+
+
+
+
+リスト7-22
+public function handle()
+{
+    $choice = ['id', 'name', 'age'];
+    echo "find Person!\n";
+    $field = $this->choice("select field:", $choice, 1);
+    $value = $this->ask('input value:');
+
+
+    $p = Person::where($field, $value)->first();
+
+
+    if ($p != null)
+    {
+        echo 'id = ' . $p->id . "\n";
+        echo $p->all_data;
+    }
+    else
+    {
+        echo "can't find Person.";
+    }
+}
+
+
+
+
+リスト7-23
+public function handle()
+{
+    $choice = ['id', 'name', 'age'];
+    $this->question ("find Person!");
+    $field = $this->choice("select field:", $choice, 1);
+    $value = $this->ask('input value:');
+    
+    $p = Person::where($field, $value)->first();
+
+
+    if ($p != null)
+    {
+        $this->info('id = ' . $p->id);
+        $this->line($p->all_data) ;
+    }
+    else
+    {
+        $this->error( "can't find Person.");
+    }
+}
+
+
+
+
+リスト7-24
+public function handle()
+{
+    $min = (int)$this->ask('min age:');
+    $max = (int)$this->ask('max age:');
+    $headers = ['id', 'name', 'age', 'mail'];
+    $result = Person::select($headers)
+        ->where('age', '>=' , $min)
+        ->where('age', '<=', $max)
+        ->orderBy('age')->get();
+    if ($result->count() == 0)
+    {
+        $this->error("can't find Person.");
+        return;
+    }
+    $data = $result->toArray();
+    $this->table($headers, $data);
+}
+
+
+
+
+リスト7-25
+Artisan::command('inspire', function () {
+    $this->comment(Inspiring::quote());
+})->describe('Display an inspiring quote');
+
+
+
+
+リスト7-26
+Artisan::command('person {id}', function () {
+    $id = $this->argument('id');
+    $p = App\Person::find($id);
+    $this->question('id = $id');
+    $this->line($p->all_data);
+});
