@@ -19,6 +19,6 @@
     @endforeach
     </ol>
     <hr>
-    {!! $data->links() !!}
+    {!! $paginator->link() !!}
 </body>
 </html>
