@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/hello', 'App\Http\Controllers\HelloController@index')->name('hello');
+Route::get('/hello', 'App\Http\Controllers\HelloController@index')->name('hello');
 Route::get('/hello/other', 'App\Http\Controllers\HelloController@other');
 
 // Route::get('/hello/{id}','App\Http\Controllers\HelloController@index')->where('id', '[0-9]+');
@@ -53,5 +53,7 @@ Route::get('/sample', 'App\Http\Controllers\Sample\SampleController@index')->nam
 
 Route::get('/hello/{id}', 'App\Http\Controllers\HelloController@index');
 
-Route::get('/hello', 'App\Http\Controllers\HelloController@index')
-    ->middleware('MyMW');
+// Route::get('/hello', 'App\Http\Controllers\HelloController@index')
+//     ->middleware('MyMW');
+
+Route::get('/hello/{id}/{name}', 'App\Http\Controllers\HelloController@save');
