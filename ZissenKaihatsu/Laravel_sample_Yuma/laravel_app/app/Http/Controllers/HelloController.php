@@ -8,15 +8,15 @@ use App\Http\Pagination\MyPaginator;
 
 class HelloController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         $msg = 'show people record.';
-        $re = Person::get();
-        $fields = Person::get()->fields();
+        $result = Person::get();
 
         $data = [
-            'msg' => implode(', ', $fields),
-            'data' => $re,
+            'input' => '',
+            'msg' => $msg,
+            'data' => $result,
         ];
         return view('hello.index', $data);
     }
@@ -48,19 +48,6 @@ class HelloController extends Controller
         {
             return Person::find($id)->toJson();
         }
-    }
-
-    public function index()
-    {
-        $msg = 'show people record.';
-        $result = Person::get();
-
-        $data = [
-            'input' => '',
-            'msg' => $msg,
-            'data' => $result,
-        ];
-        return view('hello.index', $data);
     }
 
     public function send(Request $request)
