@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'driver' => env('SCOUT_DRIVER', 'algolia'),
+    'driver' => env('SCOUT_DRIVER', 'tntsearch'),
 
     /*
     |--------------------------------------------------------------------------
@@ -137,6 +137,10 @@ return [
             //     'filterableAttributes'=> ['id', 'name', 'email'],
             // ],
         ],
+    ],
+
+    'tntsearch' => [
+        'storage' => storage_path(),
     ],
 
 ];
