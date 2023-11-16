@@ -30,6 +30,6 @@ class MyJob implements ShouldQueue
      */
     public function handle()
     {
-        //
+        echo '<p class="myjob">THIS IS MYJOB!</p>';
     }
 }
