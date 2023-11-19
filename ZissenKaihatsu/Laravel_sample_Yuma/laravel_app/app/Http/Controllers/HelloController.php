@@ -5,12 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Person;
 use App\Http\Pagination\MyPaginator;
+use App\Jobs\MyJob;
 
 class HelloController extends Controller
 {
     public function index()
     {
-        Person::get(['*'])->searchable();
+        MyJob::dispatch(); //☆
         $msg = 'show people record.';
         $result = Person::get();
 

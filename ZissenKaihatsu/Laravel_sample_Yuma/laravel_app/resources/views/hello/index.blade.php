@@ -3,7 +3,6 @@
 <head>
     <title>Index</title>
     <link href="/css/app.css"  rel="stylesheet">
-    ……必要に応じて記述……
     <script>
     function doAction(){
         var id = document.querySelector('#id').value;
