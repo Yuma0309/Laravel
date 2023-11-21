@@ -63,3 +63,5 @@ Route::get('/hello/json/{id}', 'App\Http\Controllers\HelloController@json');
 
 Route::get('/hello', 'App\Http\Controllers\HelloController@index');
 Route::post('/hello', 'App\Http\Controllers\HelloController@send');
+
+Route::get('/hello/{person}', 'App\Http\Controllers\HelloController@index');
