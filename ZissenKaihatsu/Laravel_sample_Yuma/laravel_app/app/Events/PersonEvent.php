@@ -19,9 +19,12 @@ class PersonEvent
      *
      * @return void
      */
-    public function __construct()
+
+    public $person;
+
+    public function __construct(Person $person)
     {
-        //
+        $this->person = $person;
     }
 
     /**
