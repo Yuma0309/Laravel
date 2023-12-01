@@ -23,6 +23,10 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
+    protected $subscribe = [
+        'App\Listeners\MyEventSubscriber',
+    ];
+
     /**
      * Register any events for your application.
      *
