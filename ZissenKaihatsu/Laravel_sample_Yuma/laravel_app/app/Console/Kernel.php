@@ -24,11 +24,8 @@ class Kernel extends ConsoleKernel
     {
         $count = Person::all()->count();
         $id = rand(0, $count) + 1;
-        $schedule->call(function() use ($id)
-        {
-            $person = Person::find($id);
-            MyJob::dispatch($person);
-        });
+        $obj = new ScheduleObj($id);
+        $schedule->call($obj);
     }
 
     /**
