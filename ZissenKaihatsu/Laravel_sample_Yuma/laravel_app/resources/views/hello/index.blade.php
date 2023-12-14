@@ -2,44 +2,18 @@
 <html lang="ja">
 <head>
     <title>Index</title>
-    <link href="/css/app.css"  rel="stylesheet">
-    <script>
-    function doAction(){
-        var id = document.querySelector('#id').value;
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/hello/json/' + id, true);
-        xhr.responseType = 'json';
-        xhr.onload = function(e) {
-            if (this.status == 200) {
-                var result = this.response;
-                document.querySelector('#name').textContent = result.name;
-                document.querySelector('#mail').textContent = result.mail;
-                document.querySelector('#age').textContent = result.age;
-            }
-        };
-        xhr.send();
-    }
-    </script>
+    <link href="{{ mix('css/app.css') }}" 
+        rel="stylesheet" type="text/css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-<body>
+<body style="padding:10px;">
     <h1>Hello/Index</h1>
-   <p>{{$msg}}</p>
-    <div>
-    <form action="/hello" method="post">
-        @csrf
-        ID: <input type="text" id="id" name="id">
-        <input type="submit">
-    </form>
+    <p>{{$msg}}</p>
+
+    <div id="app">
+        <example-component></example-component>
     </div>
-    <hr>
-    <table border="1">
-    @foreach($data as $item)
-    <tr>
-        <th>{{$item->id}}</th>
-        <td>{{$item->all_data}}</td>
-    </tr>
-    @endforeach
-    </table>
-    <hr>
+    <script src="{{ mix('js/app.js') }}"></script>
+
 </body>
-</html>
+</html> 
