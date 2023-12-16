@@ -2,8 +2,7 @@
 <html lang="ja">
 <head>
     <title>Index</title>
-    <link href="{{ mix('css/app.css') }}" 
-        rel="stylesheet" type="text/css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body style="padding:10px;">
@@ -13,7 +12,5 @@
     <div id="app">
         <example-component></example-component>
     </div>
-    <script src="{{ mix('js/app.js') }}"></script>
-
 </body>
-</html> 
+</html>
