@@ -10,7 +10,7 @@
     <p>{{$msg}}</p>
 
     <div id="app">
-        <example-component></example-component>
+        <my-component></my-component>
     </div>
 </body>
 </html>
