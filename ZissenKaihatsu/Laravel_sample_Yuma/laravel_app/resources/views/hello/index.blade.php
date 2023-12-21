@@ -9,8 +9,6 @@
     <h1>Hello/Index</h1>
     <p>{{$msg}}</p>
 
-    <div id="app">
-        <my-component></my-component>
-    </div>
+    <div id="example"></div>
 </body>
 </html>
