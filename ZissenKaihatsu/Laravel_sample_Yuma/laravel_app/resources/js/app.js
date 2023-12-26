@@ -1,1 +1,1 @@
-import './components/Example';
+import './components/MyComponent';
