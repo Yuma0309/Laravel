@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\Person;
 
 class ExampleTest extends TestCase
 {
@@ -11,12 +12,23 @@ class ExampleTest extends TestCase
     {
         $data = [
             'id' => 1,
-            'name' => 'YAMADA-TARO',
-            'mail' => 'taro@yamada',
-            'age' => '34'
+            'name' => 'DUMMY',
+            'mail' => 'dummy@mail',
+            'age' => 0,
         ];
+        $person = new Person();
+        $person->fill($data)->save();
         $this->assertDatabaseHas('people',$data);
-        $data['id'] =2; //★
-        $this->assertDatabaseMissing('people', $data);
+
+
+        $person->name = 'NOT-DUMMY';
+        $person->save();
+        $this->assertDatabaseMissing('people',$data);
+        $data['name'] = 'NOT-DUMMY';
+        $this->assertDatabaseHas('people',$data);
+
+
+        $person->delete();
+        $this->assertDatabaseMissing('people',$data);
     }
 }
