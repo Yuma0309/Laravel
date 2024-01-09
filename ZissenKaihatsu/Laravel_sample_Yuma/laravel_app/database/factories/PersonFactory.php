@@ -1,12 +1,11 @@
 <?php
-
-/* @var $factory \Illuminate\Database\Eloquent\Factory */
-
-use App\Model;
+use App\Models\Person;
 use Faker\Generator as Faker;
 
-$factory->define(Model::class, function (Faker $faker) {
+$factory->define(Person::class, function (Faker $faker) {
     return [
-        //
+        'name' => $faker->name,
+        'mail' => $faker->email,
+        'age' => $faker->numberBetween(1,100),
     ];
 });
