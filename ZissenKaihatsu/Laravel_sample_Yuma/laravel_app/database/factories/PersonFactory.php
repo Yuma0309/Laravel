@@ -1,11 +1,20 @@
 <?php
-use App\Models\Person;
-use Faker\Generator as Faker;
 
-$factory->define(Person::class, function (Faker $faker) {
-    return [
-        'name' => $faker->name,
-        'mail' => $faker->email,
-        'age' => $faker->numberBetween(1,100),
-    ];
-});
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Person;
+
+class PersonFactory extends Factory
+{
+    protected $model = Person::class;
+
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->name,
+            'mail' => $this->faker->email,
+            'age' => $this->faker->numberBetween(1, 100),
+        ];
+    }
+}
