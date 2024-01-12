@@ -35,4 +35,15 @@ class PersonFactory extends Factory
             ];
         });
     }
+
+    public function configure()
+    {
+        return $this->afterMaking(function (Person $person) {
+            $person->name .= ' [making]';
+            $person->save();
+        })->afterCreating(function (Person $person) {
+            $person->name .= ' [creating]';
+            $person->save();
+        });
+    }
 }
