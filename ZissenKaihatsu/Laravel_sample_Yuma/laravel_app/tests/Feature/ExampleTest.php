@@ -9,6 +9,8 @@ use Database\Seeders\DatabaseSeeder;
 use App\Models\Person;
 use Illuminate\Support\Facades\Bus;
 use App\Jobs\MyJob;
+use Illuminate\Support\Facades\Event;
+use App\Events\PersonEvent;
 
 class ExampleTest extends TestCase
 {
@@ -16,25 +18,17 @@ class ExampleTest extends TestCase
 
     public function testBasicTest()
     {
-        $id = 1;
-        $data = [
-            'id' => $id,
-            'name' => 'DUMMY',
-            'mail' => 'dummy@mail',
-            'age' => 0,
-        ];
-        $person = new Person();
-        $person->fill($data)->save();
-        $this->assertDatabaseHas('people',$data);
+        Person::factory()->create();
+        $person = Person::factory()->create();
 
-        Bus::fake();
-        MyJob::dispatch($id);
-
-        Bus::assertDispatched(MyJob::class, 
-            function($job) use ($id)
+        Event::fake();
+        Event::assertNotDispatched(PersonEvent::class);
+        event(new PersonEvent($person));
+        Event::assertDispatched(PersonEvent::class);
+        Event::assertDispatched(PersonEvent::class,
+            function($event) use ($person)
         {
-            $p = Person::find($id)->first();
-            return $job->getPersonId() == $p->id;
+            return $event->person === $person;
         });
     }
 }
