@@ -11,10 +11,20 @@ use App\Events\PersonEvent;
 
 class HelloController extends Controller
 {
-    public function index()
+    public function index($id = null)
     {
+        if ($id != null)
+        {
+            $result = Person::find($id);
+            event(new PersonEvent($result));
+        } else {
+            $result = Person::get();
+        }
+        $msg = 'show people record.';
         $data = [
-            'msg' => 'This is React application.',
+            'input' => '',
+            'msg' => $msg,
+            'data' => $result,
         ];
         return view('hello.index', $data);
     }

@@ -2,13 +2,42 @@
 <html lang="ja">
 <head>
     <title>Index</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="/css/app.css"  rel="stylesheet">
+    <script>
+    function doAction(){
+        var id = document.querySelector('#id').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/hello/json/' + id, true);
+        xhr.responseType = 'json';
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                var result = this.response;
+                document.querySelector('#name').textContent = result.name;
+                document.querySelector('#mail').textContent = result.mail;
+                document.querySelector('#age').textContent = result.age;
+            }
+        };
+        xhr.send();
+    }
+    </script>
 </head>
-<body style="padding:10px;">
+<body>
     <h1>Hello/Index</h1>
     <p>{{$msg}}</p>
-
-    <div id="mycomponent"></div>
+    <div>
+    <form action="/hello" method="post">
+        @csrf
+        ID: <input type="text" id="id" name="id">
+        <input type="submit">
+    </form>
+    </div>
+    <hr>
+    <table border="1">
+        <tr>
+            <th>{{$data->id}}</th>
+            <td>{{$data->all_data}}</td>
+        </tr>
+    </table>
+    <hr>
 </body>
 </html>
