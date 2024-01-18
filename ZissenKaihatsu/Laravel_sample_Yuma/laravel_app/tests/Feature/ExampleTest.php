@@ -14,21 +14,13 @@ use App\Events\PersonEvent;
 
 class ExampleTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testBasicTest()
     {
         Person::factory()->create();
         $person = Person::factory()->create();
 
         Event::fake();
-        Event::assertNotDispatched(PersonEvent::class);
-        event(new PersonEvent($person));
+        $this->get('/hello/' . $person->id)->assertOk();
         Event::assertDispatched(PersonEvent::class);
-        Event::assertDispatched(PersonEvent::class,
-            function($event) use ($person)
-        {
-            return $event->person === $person;
-        });
     }
 }
