@@ -33,10 +33,12 @@
     </div>
     <hr>
     <table border="1">
+        @foreach ($data as $item)
         <tr>
-            <th>{{$data->id}}</th>
-            <td>{{$data->all_data}}</td>
+            <th>{{$item->id}}</th>
+            <td>{{$item->all_data}}</td>
         </tr>
+        @endforeach
     </table>
     <hr>
 </body>

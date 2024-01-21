@@ -8,19 +8,15 @@ use App\Models\Person;
 use App\Http\Pagination\MyPaginator;
 use App\Jobs\MyJob;
 use App\Events\PersonEvent;
+use App\MyClasses\PowerMyService;
 
 class HelloController extends Controller
 {
-    public function index($id = null)
+    public function index(PowerMyService $service)
     {
-        if ($id != null)
-        {
-            $result = Person::find($id);
-            event(new PersonEvent($result));
-        } else {
-            $result = Person::get();
-        }
-        $msg = 'show people record.';
+        $service->setId(1);
+        $msg = $service->say();
+        $result = Person::get();
         $data = [
             'input' => '',
             'msg' => $msg,
