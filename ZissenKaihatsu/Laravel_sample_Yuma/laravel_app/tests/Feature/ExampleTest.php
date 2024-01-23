@@ -14,16 +14,28 @@ use App\Events\PersonEvent;
 use Illuminate\Support\Facades\Queue;
 use App\Listeners\PersonEventListener;
 use Illuminate\Events\CallQueuedListener;
+use Mockery;
+use App\MyClasses\PowerMyService;
 
 class ExampleTest extends TestCase
 {
     public function testBasicTest()
     {
+        $msg = '*** OK ***';
+        $mock = Mockery::mock(PowerMyService::class);
+        $mock->shouldReceive('setId')
+                ->withArgs([1])
+                ->once()
+                ->andReturn(null);
+
+        $mock->shouldReceive('say')
+                ->once()
+                ->andReturn($msg);
+
+        $this->instance(PowerMyService::class, $mock);
+
         $response = $this->get('/hello');
         $content = $response->getContent();
-        echo $content;
-        $response->assertSeeText(
-                'あなたが好きなのは、1番のリンゴですね！',
-                $content);
+        $response->assertSeeText($msg, $content);
     }
 }
