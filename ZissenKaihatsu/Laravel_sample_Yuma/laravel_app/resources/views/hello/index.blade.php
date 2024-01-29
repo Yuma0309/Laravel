@@ -26,7 +26,11 @@
     <p>{{$msg}}</p>
     <ul>
     @foreach($data as $item)
-    <li>{{$item->all_data}}</li>
+        @if ($item && isset($item->all_data))
+            <li>{{ $item->all_data }}</li>
+        @else
+            <li>No data available</li>
+        @endif
     @endforeach
     </ul>
 </body>
