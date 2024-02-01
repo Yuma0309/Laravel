@@ -23,15 +23,6 @@
 </head>
 <body style="padding:10px;">
     <h1>Hello/Index</h1>
-    <p>{{$msg}}</p>
-    <ul>
-    @foreach($data as $item)
-        @if ($item && isset($item->all_data))
-            <li>{{ $item->all_data }}</li>
-        @else
-            <li>No data available</li>
-        @endif
-    @endforeach
-    </ul>
+    <pre>{{$msg}}</pre>
 </body>
 </html>
