@@ -20,7 +20,6 @@ class HelloController extends Controller
             '--method'=>'get',
             '--path'=>'hello',
             '--sort'=>'uri',
-            '--compact'=>null,
         ];
         $output = new BufferedOutput;
         Artisan::call('route:list', $opt, $output);
