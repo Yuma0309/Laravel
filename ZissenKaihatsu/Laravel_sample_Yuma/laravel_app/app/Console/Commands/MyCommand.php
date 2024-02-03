@@ -11,14 +11,14 @@ class MyCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'my:cmd';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'This is my first command!';
 
     /**
      * Execute the console command.
