@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Inspiring;
 
 class MyCommand extends Command
 {
@@ -27,6 +28,8 @@ class MyCommand extends Command
      */
     public function handle()
     {
-        return Command::SUCCESS;
+        echo "\n＊今日の格言＊\n\n";
+        echo Inspiring::quote();
+        echo "\n\n";
     }
 }
