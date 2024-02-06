@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Inspiring;
+use App\Models\Person;
 
 class MyCommand extends Command
 {
@@ -12,7 +12,7 @@ class MyCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'my:cmd';
+    protected $signature = 'my:cmd {person?}';
 
     /**
      * The console command description.
@@ -21,6 +21,11 @@ class MyCommand extends Command
      */
     protected $description = 'This is my first command!';
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      *
@@ -28,8 +33,17 @@ class MyCommand extends Command
      */
     public function handle()
     {
-        echo "\n＊今日の格言＊\n\n";
-        echo Inspiring::quote();
-        echo "\n\n";
+        $p = $this->argument('person');
+        if ($p != null)
+        {
+            $person = Person::find($p);
+            if ($person != null)
+            {
+                echo "\nPerson id = " . $p . ":\n";
+                echo $person->all_data . "\n";
+                return;
+            }
+        }
+        echo "can't get Person...";
     }
 }
