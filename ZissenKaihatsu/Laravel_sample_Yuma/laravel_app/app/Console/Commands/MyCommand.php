@@ -12,7 +12,7 @@ class MyCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'my:cmd {num?*}';
+    protected $signature = 'my:cmd {--id=?} {--name=?}';
 
     /**
      * The console command description.
