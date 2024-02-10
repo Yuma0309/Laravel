@@ -33,12 +33,29 @@ class MyCommand extends Command
      */
     public function handle()
     {
-        $arr = $this->arguments();
-        $re = 0;
-        foreach ($arr['num'] as $item)
+        $id = $this->option('id');
+        $name = $this->option('name');
+        if ($id != '?')
         {
-            $re += (int)$item;
+            $p = Person::find($id);
         }
-        echo "total: " . $re;
+        else
+        {
+            if ($name != '?')
+            {
+                $p = Person::where('name', $name)->first();
+            }
+            else
+            {
+                $p = null;
+            }
+        }
+        if ($p != null)
+        {
+            echo "Person id = " . $p->id . ":\n" . $p->all_data;
+        }
+        else{
+            echo 'no Person find...';
+        }
     }
 }
