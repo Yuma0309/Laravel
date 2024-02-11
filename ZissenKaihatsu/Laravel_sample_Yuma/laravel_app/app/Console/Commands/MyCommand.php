@@ -33,29 +33,32 @@ class MyCommand extends Command
      */
     public function handle()
     {
-        $id = $this->option('id');
-        $name = $this->option('name');
-        if ($id != '?')
+        $stones = $this->option('stones');
+        $max = $this->option('max');
+        echo "*** start ***\n";
+        while($stones > 0)
         {
-            $p = Person::find($id);
-        }
-        else
-        {
-            if ($name != '?')
+            echo ("stones: $stones\n");
+            $ask = $this->ask("you:");
+            $you = (int)$ask;
+            $you = $you > 0 && $you <= $max ? $you : 1;
+            $stones -= $you;
+            echo ("stones: $stones\n");
+            if ($stones <= 0)
             {
-                $p = Person::where('name', $name)->first();
+                echo "you lose...\n";
+                break;
             }
-            else
+            $me = ($stones - 1) % (1 + $max);
+            $me = $me == 0 ? 1 : $me;
+            $stones -= $me;
+            echo "me: $me\n";
+            if ($stones <= 0)
             {
-                $p = null;
+                echo "you win!!\n";
+                break;
             }
         }
-        if ($p != null)
-        {
-            echo "Person id = " . $p->id . ":\n" . $p->all_data;
-        }
-        else{
-            echo 'no Person find...';
-        }
+        echo "--- end ---\n";
     }
 }
