@@ -33,21 +33,19 @@ class MyCommand extends Command
      */
     public function handle()
     {
-        $choice = ['id', 'name', 'age'];
-        $this->question ("find Person!");
-        $field = $this->choice("select field:", $choice, 1);
-        $value = $this->ask('input value:');
-
-        $p = Person::where($field, $value)->first();
-
-        if ($p != null)
+        $min = (int)$this->ask('min age:');
+        $max = (int)$this->ask('max age:');
+        $headers = ['id', 'name', 'age', 'mail'];
+        $result = Person::select($headers)
+            ->where('age', '>=' , $min)
+            ->where('age', '<=', $max)
+            ->orderBy('age')->get();
+        if ($result->count() == 0)
         {
-            $this->info('id = ' . $p->id);
-            $this->line($p->all_data) ;
+            $this->error("can't find Person.");
+            return;
         }
-        else
-        {
-            $this->error( "can't find Person.");
-        }
+        $data = $result->toArray();
+        $this->table($headers, $data);
     }
 }
