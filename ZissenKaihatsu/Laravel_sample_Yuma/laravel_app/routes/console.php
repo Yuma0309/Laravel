@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Artisan;
 |
 */
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->describe('Display an inspiring quote');
+Artisan::command('person {id}', function () {
+    $id = $this->argument('id');
+    $p = App\Models\Person::find($id);
+    $this->question('id = $id');
+    $this->line($p->all_data);
+});
